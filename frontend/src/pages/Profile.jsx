@@ -1,6 +1,6 @@
 // import React from 'react'
 // import {useAuth} from '../context/authContext.jsx'
-import Logout from '../components/Logout.jsx'
+// import Logout from '../components/Logout.jsx'
 
 function Profile() {
 
@@ -8,7 +8,7 @@ function Profile() {
 
   return (
     <div>
-      <Logout/>
+      Profile
     </div>
   )
 }
