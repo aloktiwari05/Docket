@@ -12,7 +12,7 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const response = await fetch(`${apiUrl}/api/login`, {
+      const response = await fetch(`${apiUrl}/api/auth/login`, {
         method: 'POST',
         credentials: 'include',
         headers: {

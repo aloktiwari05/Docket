@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { apiUrl } from '../api/api.js';
 import {useAuth} from '../context/authContext.jsx'
+import { useNavigate } from 'react-router-dom';
 
 function Register() {
+
+  const navigate = useNavigate()
 
   const {setAccessToken} = useAuth()
   const [form, setForm] = useState({ username: '', email: '', password: '' })
@@ -23,6 +26,7 @@ function Register() {
       const {message , user, accessToken} = await response.json()
       setAccessToken(accessToken)
       console.log(message, user, accessToken )
+      navigate('/home')
     }
     catch (err) {
       console.log(err)

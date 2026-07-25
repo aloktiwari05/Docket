@@ -3,7 +3,7 @@ import {apiUrl} from '../api/api.js'
 const refreshService = async (setAccessToken, setIsLoading, setUser) => {
 
     try {
-        const result = await fetch(`${apiUrl}/api/refresh`, { method: 'POST', credentials: 'include' })
+        const result = await fetch(`${apiUrl}/api/auth/refresh`, { method: 'POST', credentials: 'include' })
 
         const data = await result.json()
 
