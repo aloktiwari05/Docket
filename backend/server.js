@@ -14,8 +14,8 @@ const corsOption = {origin: process.env.ORIGIN, credentials: true,}
 app.use(express.json())
 app.use(cors(corsOption))
 app.use(cookieParser())
-app.use('/api/',authRoutes)
-app.use('/api/task/', taskRoutes)
+app.use('/api/auth',authRoutes)
+app.use('/api/tasks', taskRoutes)
 
 app.get('/', (req,res) => {
     res.json({message: "Hello Developer"})
