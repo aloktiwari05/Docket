@@ -14,8 +14,6 @@ function Sidebar() {
   const navigate = useNavigate()
   const location = useLocation()
 
-  console.log(location)
-
   return (
     <div className="w-64 h-screen bg-white sticky left-0 top-0 flex flex-col p-4 gap-2 border-r border-gray-200">
       <div className="flex items-center gap-2 mb-4 px-2">
