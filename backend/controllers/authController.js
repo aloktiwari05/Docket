@@ -67,7 +67,7 @@ const signup = async (req, res) => {
 
         setRefreshTokenCookie(res, refreshToken)
 
-        res.status(201).json({ message: 'User Created Successfully', user: response.rows[0], accessToken })
+        res.status(201).json({ message: 'User Created Successfully', user: response, accessToken })
     }
     catch (err) {
 
