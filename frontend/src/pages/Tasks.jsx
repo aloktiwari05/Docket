@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import { createTask } from '../services/service.tasks.js'
 
 function Tasks() {
   const [activeTab, setActiveTab] = useState("all");
@@ -14,27 +15,16 @@ function Tasks() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    setTask((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setTask((prev) => ({ ...prev, [name]: value, }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(task);
-
+    await createTask(task)
     // Add API call here
 
-    setTask({
-      title: "",
-      description: "",
-      priority: "Medium",
-      dueDate: "",
-    });
-
+    setTask({ title: "", description: "", priority: "Medium", dueDate: "", });
     setShowTaskForm(false);
   };
 
