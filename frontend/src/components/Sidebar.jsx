@@ -1,4 +1,3 @@
-import React from 'react'
 import { House, CheckSquare, Calendar, FileText, Settings } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
 
