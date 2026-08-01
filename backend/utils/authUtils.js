@@ -12,7 +12,7 @@ const generateRefreshToken = (id) => {
 
 const saveRefreshToken = async (userId, token) => {
         const response = await db.query('UPDATE users SET refresh_token = ($1) WHERE id = ($2) RETURNING id, username, email, refresh_token', [token, userId])
-        console.log('generated token: ',response.rows[0].refresh_token)
+        // console.log('generated token: ',response.rows[0].refresh_token)
         return response.rows[0]
 }
 
