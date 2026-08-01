@@ -1,16 +1,19 @@
 import { useState } from "react";
 import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { createTask } from '../services/service.tasks.js'
+import { useAuth } from '../context/authContext.jsx'
 
 function Tasks() {
+
+  const { accessToken } = useAuth()
   const [activeTab, setActiveTab] = useState("all");
   const [showTaskForm, setShowTaskForm] = useState(false);
 
   const [task, setTask] = useState({
     title: "",
     description: "",
-    priority: "Medium",
-    dueDate: "",
+    priority: "medium",
+    dueDate: null,
   });
 
   const handleChange = (e) => {
@@ -21,10 +24,10 @@ function Tasks() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await createTask(task)
+    await createTask(task, accessToken)
     // Add API call here
 
-    setTask({ title: "", description: "", priority: "Medium", dueDate: "", });
+    setTask({ title: "", description: "", priority: "medium", dueDate: "", });
     setShowTaskForm(false);
   };
 
