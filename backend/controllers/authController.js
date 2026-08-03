@@ -113,7 +113,6 @@ const refresh = async (req, res) => {
         }
 
         const accessToken = generateAccessToken(id)
-        console.log('accessToken :', accessToken)
         const newRefreshToken = generateRefreshToken(id)
         await saveRefreshToken(id, newRefreshToken)
 
