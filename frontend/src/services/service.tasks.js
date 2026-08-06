@@ -1,6 +1,6 @@
 import { apiUrl } from "../api/api.js";
 
-const createTask = async (task, token) => {
+const createTaskService = async (task, token) => {
 
 
     try {
@@ -23,8 +23,32 @@ const createTask = async (task, token) => {
         return result;
     } catch (err) {
         console.log("Error creating task:", err);
-        // throw err; // Optional: rethrow if the caller should handle it
     }
 };
 
-export { createTask };
+const fetchTasksService = async (token, setTask) => {
+    try {
+        const response = await fetch(`${apiUrl}/api/tasks/get`, {
+            headers: {
+                authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            }
+        })
+
+        const result = await response.json()
+        console.log(result, result.data)
+
+        if (result.ok) {
+            const fetchedTasks = result.data
+            setTask({ ...fetchedTasks })
+        }
+    }
+    catch (err) {
+        console.log(err)
+    }
+}
+
+export {
+    createTaskService,
+    fetchTasksService,
+};
