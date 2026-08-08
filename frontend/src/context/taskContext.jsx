@@ -14,19 +14,22 @@ const TaskProvider = ({ children }) => {
         dueDate: "",
     });
 
+    const [allTasks, setAllTasks] = useState([])
+
     const createTask = async () =>{
-        await createTaskService(task, accessToken)
+        const newTask = await createTaskService(task, accessToken)
+        setAllTasks(prev => ([...prev, newTask]))
     }
 
     useEffect(() => {
 
         if (!accessToken) return;
-        fetchTasksService(accessToken, setTask)
+        fetchTasksService(accessToken, setAllTasks)
 
-    }, [accessToken, task])
+    }, [accessToken])
 
     return (
-        <TaskContext.Provider value={{ task, setTask, createTask }}>
+        <TaskContext.Provider value={{ task, setTask, createTask, allTasks, setAllTasks }}>
             {children}
         </TaskContext.Provider>
     )

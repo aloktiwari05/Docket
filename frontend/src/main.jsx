@@ -14,6 +14,7 @@ import Settings from './pages/Settings.jsx'
 import { createBrowserRouter, createRoutesFromElements, RouterProvider, Route, } from 'react-router-dom'
 import { AuthProvider } from './context/authContext.jsx'
 import ProtectedRoutes from './routes/ProtectedRoutes.jsx'
+import { TaskProvider } from './context/taskContext.jsx'
 
 const router = createBrowserRouter(createRoutesFromElements(
   <Route>
@@ -35,6 +36,8 @@ const router = createBrowserRouter(createRoutesFromElements(
 
 createRoot(document.getElementById('root')).render(
   <AuthProvider>
-    <RouterProvider router={router} />
+    <TaskProvider>
+      <RouterProvider router={router} />
+    </TaskProvider>
   </AuthProvider>,
 )
