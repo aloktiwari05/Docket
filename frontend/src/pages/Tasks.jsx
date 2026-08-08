@@ -1,20 +1,28 @@
-import { useState } from "react";
+import { useState,  } from "react";
 import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
-import { createTask } from '../services/service.tasks.js'
-import { useAuth } from '../context/authContext.jsx'
+import { useTasks } from '../context/taskContext.jsx'
+import TaskCard from '../components/TaskCard.jsx'
+// import { fetchTasksService } from "../services/service.tasks.js";
 
 function Tasks() {
-
-  const { accessToken } = useAuth()
+  const { setTask, createTask, task, allTasks } = useTasks()
   const [activeTab, setActiveTab] = useState("all");
   const [showTaskForm, setShowTaskForm] = useState(false);
 
-  const [task, setTask] = useState({
-    title: "",
-    description: "",
-    priority: "medium",
-    dueDate: null,
-  });
+  const [now] = useState(() => Date.now())
+
+  const allCount = allTasks?.length
+  const pendingCount = allTasks?.filter((task) => !task.completed).length
+  const completedCount = allTasks?.filter((task) => task.completed).length
+  const overdueCount = allTasks.filter((task) => new Date(task.dueDate).getTime() < now && !task.completed).length
+
+  // const [allCount, setAllCount] = useState(allTasks?.length)
+  // const [pendingCount, setpendingCount] = useState(allTasks?.filter((task) => !task.completed).length)
+  // const [completedCount, setcompletedCount] = useState(allTasks?.filter((task) => task.completed).length)
+  // const [overdueCount, setoverdueCount] = useState(allTasks.filter((task) => new Date(task.dueDate).getTime() < now && !task.completed).length)
+
+
+  console.log(allTasks)
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,7 +32,7 @@ function Tasks() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await createTask(task, accessToken)
+    await createTask()
     // Add API call here
 
     setTask({ title: "", description: "", priority: "medium", dueDate: "", });
@@ -32,14 +40,16 @@ function Tasks() {
   };
 
   const tabs = [
-    { id: "all", label: "All", count: 12 },
-    { id: "pending", label: "Pending", count: 5 },
-    { id: "completed", label: "Completed", count: 6 },
-    { id: "overdue", label: "Overdue", count: 1 },
+    { id: "all", label: "All", count: allCount },
+    { id: "pending", label: "Pending", count: pendingCount },
+    { id: "completed", label: "Completed", count: completedCount },
+    { id: "overdue", label: "Overdue", count: overdueCount },
   ];
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-gray-50 px-5 py-3">
+
+      {/* <button className='border-xl bg-amber-300 w-md p-3' onClick={() => {fetchTasksService(accessToken)}}>Fetch Tasks</button> This  line is simply for testing purpose. */}
       {/* Header */}
       <section className="mb-5 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
         <div>
@@ -94,16 +104,21 @@ function Tasks() {
         </div>
 
         {/* Empty State */}
-        <div className="flex flex-1 items-center justify-center rounded-xl border-2 border-dashed border-gray-200">
-
-          <p className="text-gray-500">
-            No tasks available. Click{" "}
-            <span className="font-semibold text-[#4800FF]">
-              "New Task"
-            </span>{" "}
-            to create one.
-          </p>
-        </div>
+        {allTasks.length === 0 ? (
+          <div>
+            <p className="text-gray-500">
+              No tasks available. Click{" "}
+              <span className="font-semibold text-[#4800FF]">
+                "New Task"
+              </span>{" "}
+              to create one.
+            </p>
+          </div>
+        ) : (
+          allTasks.map((task) => (
+            <TaskCard key={task.id} task={task} />
+          ))
+        )}
 
         {/* Pagination */}
         <div className="mt-6 flex items-center justify-between">
