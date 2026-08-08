@@ -22,7 +22,7 @@ function Login() {
       })
       const {message, accessToken} = await response.json();
       setAccessToken(accessToken)
-      navigate('/home')
+      navigate('/dashboard')
 
       console.log(message)
     }
