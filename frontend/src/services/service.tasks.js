@@ -13,20 +13,20 @@ const createTaskService = async (task, token) => {
             body: JSON.stringify(task),
         });
 
+        
         const result = await response.json();
-
         if (!response.ok) {
             throw new Error(result.message || "Failed to create task");
         }
 
         console.log("Task created successfully:", result);
-        return result;
+        return result.data;
     } catch (err) {
         console.log("Error creating task:", err);
     }
 };
 
-const fetchTasksService = async (token, setTask) => {
+const fetchTasksService = async (token, setAllTasks) => {
     try {
         const response = await fetch(`${apiUrl}/api/tasks/get`, {
             headers: {
@@ -36,12 +36,9 @@ const fetchTasksService = async (token, setTask) => {
         })
 
         const result = await response.json()
-        console.log(result, result.data)
 
-        if (result.ok) {
             const fetchedTasks = result.data
-            setTask({ ...fetchedTasks })
-        }
+            setAllTasks([...fetchedTasks])
     }
     catch (err) {
         console.log(err)
