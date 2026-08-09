@@ -34,7 +34,6 @@ const getTasks = async (req, res) => {
         }
 
         const data = result.rows
-        console.log(data)
         return res.status(200).json({ message: 'Task fetch successful', data })
     }
     catch (err) {
@@ -49,8 +48,21 @@ const updateTask = async () => {
 
 }
 
-const deleteTask = async () => {
+const deleteTask = async (req, res) => {
+    const taskID = Number(req.params.taskID);
 
+    try{
+        const result = await db.query('DELETE FROM tasks WHERE task_id = $1',[taskID])
+
+        if(result.rowCount === 0){
+            return res.status(404).json({message: 'Task not found'})
+        }
+        console.log(result)
+        return res.status(200).json({message: 'Task Deleted Successfully !'})
+    }
+    catch(err){
+        return res.status(500).json({message: 'Internal Server Error'})
+    }
 }
 
 export {
