@@ -1,8 +1,6 @@
 import { apiUrl } from "../api/api.js";
 
 const createTaskService = async (task, token) => {
-
-
     try {
         const response = await fetch(`${apiUrl}/api/tasks/new`, {
             method: "POST",
@@ -45,7 +43,28 @@ const fetchTasksService = async (token, setAllTasks) => {
     }
 }
 
+const deleteTaskService = async (token, task_id) => {
+    try{
+        const response = await fetch(`${apiUrl}/api/tasks/delete/${task_id}`,{
+            method: "DELETE",
+            headers: {
+                authorization: `Bearer ${token}`
+            }
+        })
+        const result = await response.json()
+
+        if(!response.ok){
+            throw new Error(result.message || "Failed to delete the task");
+        }
+        console.log(result)
+    }
+    catch(err){
+        console.log(err)
+    }
+}
+
 export {
     createTaskService,
     fetchTasksService,
+    deleteTaskService,
 };
