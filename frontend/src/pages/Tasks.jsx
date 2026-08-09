@@ -1,11 +1,11 @@
-import { useState,  } from "react";
+import { useState, } from "react";
 import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { useTasks } from '../context/taskContext.jsx'
 import TaskCard from '../components/TaskCard.jsx'
 // import { fetchTasksService } from "../services/service.tasks.js";
 
 function Tasks() {
-  const { setTask, createTask, task, allTasks } = useTasks()
+  const { setTask, createTask, task, allTasks, } = useTasks()
   const [activeTab, setActiveTab] = useState("all");
   const [showTaskForm, setShowTaskForm] = useState(false);
 
@@ -67,7 +67,7 @@ function Tasks() {
       </section>
 
       {/* Content */}
-      <section className="flex flex-1 flex-col rounded-2xl bg-white p-5 shadow-sm">
+      <section className="flex flex-1 flex-col rounded-2xl bg-white p-5 shadow-sm overflow-y-auto">
         {/* Filters */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-gray-200 pb-0">
           <div className="flex flex-wrap items-end gap-2">
@@ -75,7 +75,7 @@ function Tasks() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`border-b-2 px-4 py-3 text-sm font-medium transition-all duration-200 ${activeTab === tab.id
+                className={`border-b-2 px-6 py-3 text-sm font-medium transition-all duration-200 ${activeTab === tab.id
                   ? "border-[#4800FF] bg-[#4800FF]/5 text-[#4800FF]"
                   : "border-transparent text-gray-600 hover:border-gray-300 hover:text-gray-900"
                   }`}
@@ -94,18 +94,36 @@ function Tasks() {
         </div>
 
         {/* Table Header */}
-        <div className="grid grid-cols-7 items-center rounded-lg bg-gray-100 px-4 py-3 text-sm font-semibold text-gray-600">
-          <div>Task</div>
-          <div>Category</div>
-          <div>Priority</div>
-          <div>Due Date</div>
-          <div>Status</div>
-          <div>Actions</div>
+
+        <div className={`grid grid-cols-[minmax(0,2fr)_minmax(120px,1fr)_minmax(100px,1fr)_minmax(120px,1fr)_minmax(110px,1fr)_minmax(150px,1.2fr)] items-center gap-4 px-4 border-b border-gray-200 bg-gray-50 py-3`}>
+          <div className="font-medium text-sm text-gray-600">
+            Task
+          </div>
+
+          <div className="font-medium text-sm pl-1 text-gray-600">
+            Category
+          </div>
+
+          <div className="font-medium text-sm pl-3 text-gray-600">
+            Priority
+          </div>
+
+          <div className="font-medium text-sm pl-3 text-gray-600">
+            Due Date
+          </div>
+
+          <div className="font-medium text-sm pl-3 text-gray-600">
+            Status
+          </div>
+
+          <div className="font-medium text-sm pl-7 text-gray-600">
+            Actions
+          </div>
         </div>
 
         {/* Empty State */}
         {allTasks.length === 0 ? (
-          <div>
+          <div className="px-4 py-12 text-center">
             <p className="text-gray-500">
               No tasks available. Click{" "}
               <span className="font-semibold text-[#4800FF]">
@@ -116,7 +134,7 @@ function Tasks() {
           </div>
         ) : (
           allTasks.map((task) => (
-            <TaskCard key={task.id} task={task} />
+            <TaskCard key={task.task_id} task={task} />
           ))
         )}
 
