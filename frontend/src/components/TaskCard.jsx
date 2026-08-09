@@ -1,4 +1,8 @@
+import { useTasks } from "../context/taskContext.jsx"
+
 const TaskCard = ({ task }) => {
+
+    const { deleteTask } = useTasks()
     // const priorityStyles = {
     //     low: "bg-green-100 text-green-700",
     //     medium: "bg-yellow-100 text-yellow-700",
@@ -13,12 +17,11 @@ const TaskCard = ({ task }) => {
 
     return (
         <div
-            key={task.id}
-            className="grid grid-cols-7 items-center rounded-xl border border-gray-200 bg-white px-4 py-4 shadow-sm transition hover:shadow-md"
+            className={`grid grid-cols-[minmax(0,2fr)_minmax(120px,1fr)_minmax(100px,1fr)_minmax(120px,1fr)_minmax(110px,1fr)_minmax(150px,1.2fr)] items-center gap-4 px-4 border-b border-gray-100 py-4`}
         >
             {/* Task */}
-            <div className="min-w-0 pr-4">
-                <h3 className="truncate font-semibold text-gray-900">
+            <div className="min-w-0">
+                <h3 className="truncate font-medium text-gray-900">
                     {task.title}
                 </h3>
 
@@ -30,8 +33,8 @@ const TaskCard = ({ task }) => {
             </div>
 
             {/* Category */}
-            <div>
-                <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
+            <div className="min-w-0">
+                <span className="inline-block max-w-full truncate rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
                     {task.category || "General"}
                 </span>
             </div>
@@ -39,14 +42,14 @@ const TaskCard = ({ task }) => {
             {/* Priority */}
             <div>
                 <span
-                    className={`rounded-full px-3 py-1 text-xs font-medium ${task.priority === "high"
+                    className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${task.priority === "high"
                         ? "bg-red-100 text-red-700"
                         : task.priority === "medium"
                             ? "bg-yellow-100 text-yellow-700"
                             : "bg-green-100 text-green-700"
                         }`}
                 >
-                    {task.priority}
+                    {task.priority || "low"}
                 </span>
             </div>
 
@@ -60,7 +63,7 @@ const TaskCard = ({ task }) => {
             {/* Status */}
             <div>
                 <span
-                    className={`rounded-full px-3 py-1 text-xs font-medium ${task.status === "completed"
+                    className={`inline-block rounded-full px-3 py-1 text-xs font-medium ${task.status === "completed"
                         ? "bg-green-100 text-green-700"
                         : "bg-gray-100 text-gray-700"
                         }`}
@@ -70,19 +73,19 @@ const TaskCard = ({ task }) => {
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
                 <button
                     type="button"
-                    className="rounded-lg px-3 py-2 text-sm font-medium text-[#4800FF] hover:bg-purple-50"
-                    onClick={() => console.log("Edit task:", task.id)}
+                    className="rounded-lg px-3 py-2 text-sm font-medium text-[#4800FF] transition hover:bg-purple-50"
+                    onClick={() => console.log("Edit task:", task.task_id)}
                 >
                     Edit
                 </button>
 
                 <button
                     type="button"
-                    className="rounded-lg px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50"
-                    onClick={() => console.log("Delete task:", task.id)}
+                    className="rounded-lg px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50"
+                    onClick={() => deleteTask(task.task_id)}
                 >
                     Delete
                 </button>

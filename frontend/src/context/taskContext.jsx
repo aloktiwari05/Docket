@@ -1,5 +1,5 @@
 import { useState, createContext, useContext, useEffect } from "react";
-import { fetchTasksService, createTaskService } from '../services/service.tasks.js'
+import { fetchTasksService, createTaskService, deleteTaskService } from '../services/service.tasks.js'
 import { useAuth } from '../context/authContext.jsx'
 
 const TaskContext = createContext()
@@ -21,6 +21,11 @@ const TaskProvider = ({ children }) => {
         setAllTasks(prev => ([...prev, newTask]))
     }
 
+    const deleteTask = async (taskID) =>{
+        await deleteTaskService(accessToken, taskID)
+        setAllTasks((prev)=>(prev.filter(t=> t.task_id !== taskID)))
+    }
+
     useEffect(() => {
 
         if (!accessToken) return;
@@ -29,7 +34,7 @@ const TaskProvider = ({ children }) => {
     }, [accessToken])
 
     return (
-        <TaskContext.Provider value={{ task, setTask, createTask, allTasks, setAllTasks }}>
+        <TaskContext.Provider value={{ task, setTask, createTask, allTasks, setAllTasks, deleteTask }}>
             {children}
         </TaskContext.Provider>
     )
