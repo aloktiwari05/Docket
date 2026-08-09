@@ -6,7 +6,7 @@ const taskRouter = express.Router()
 
 taskRouter.get('/get', auth, getTasks)
 taskRouter.post('/new', auth, createTask)
-taskRouter.delete('/delete', auth, deleteTask)
+taskRouter.delete('/delete/:taskID', auth, deleteTask)
 taskRouter.patch('/update', auth, updateTask)
 
 export default taskRouter
