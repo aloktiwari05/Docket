@@ -1,6 +1,6 @@
 import { useTasks } from "../context/taskContext.jsx"
 
-const TaskCard = ({ task }) => {
+const TaskCard = ({ task, editMode }) => {
 
     const { deleteTask } = useTasks()
     // const priorityStyles = {
@@ -77,7 +77,7 @@ const TaskCard = ({ task }) => {
                 <button
                     type="button"
                     className="rounded-lg px-3 py-2 text-sm font-medium text-[#4800FF] transition hover:bg-purple-50"
-                    onClick={() => console.log("Edit task:", task.task_id)}
+                    onClick={() => editMode(true)}
                 >
                     Edit
                 </button>
