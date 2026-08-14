@@ -3,15 +3,15 @@ import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { useTasks } from '../context/taskContext.jsx'
 import TaskCard from '../components/TaskCard.jsx'
 import CreateTaskModal from "../components/createTaskModal.jsx";
-// import { fetchTasksService } from "../services/service.tasks.js";
+import EditTaskModal from "../components/EditTaskModal.jsx"
 
 function Tasks() {
-  const { allTasks, } = useTasks()
+  const { allTasks, taskDraft } = useTasks()
   const [activeTab, setActiveTab] = useState("all");
   const [showTaskForm, setShowTaskForm] = useState(false);
-  const [editMode, setEditMode] = useState(false)
+  const [editTask, setEditTask] = useState(null)
 
-  console.log(editMode)
+  // console.log(editTask)
 
   const [now] = useState(() => Date.now())
 
@@ -26,7 +26,7 @@ function Tasks() {
   // const [overdueCount, setoverdueCount] = useState(allTasks.filter((task) => new Date(task.dueDate).getTime() < now && !task.completed).length)
 
 
-  console.log(allTasks)
+  // console.log(allTasks)
 
   const tabs = [
     { id: "all", label: "All", count: allCount },
@@ -123,7 +123,7 @@ function Tasks() {
           </div>
         ) : (
           allTasks.map((task) => (
-            <TaskCard key={task.task_id} task={task} editMode={setEditMode} />
+            <TaskCard key={task.task_id} task={task} setEditTask={setEditTask} />
           ))
         )}
 
@@ -160,9 +160,11 @@ function Tasks() {
           </div>
         </div>
 
-        {showTaskForm && (
-          <CreateTaskModal setShowTaskForm={setShowTaskForm} />
-        )}
+        {showTaskForm && (<CreateTaskModal setShowTaskForm={setShowTaskForm} />)}
+
+        {editTask && ( <EditTaskModal task={editTask} taskDraft={taskDraft} setEditTask={setEditTask} />)}
+
+
       </section>
     </div>
   );

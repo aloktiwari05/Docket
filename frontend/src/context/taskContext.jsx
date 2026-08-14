@@ -7,7 +7,7 @@ const TaskProvider = ({ children }) => {
 
     // const [isFetching, setIsFetching] = useState(true)
     const { accessToken } = useAuth()
-    const [task, setTask] = useState({
+    const [taskDraft, setTaskDraft] = useState({
         title: "",
         description: "",
         priority: "medium",
@@ -17,7 +17,7 @@ const TaskProvider = ({ children }) => {
     const [allTasks, setAllTasks] = useState([])
 
     const createTask = async () =>{
-        const newTask = await createTaskService(task, accessToken)
+        const newTask = await createTaskService(taskDraft, accessToken)
         setAllTasks(prev => ([...prev, newTask]))
     }
 
@@ -34,7 +34,7 @@ const TaskProvider = ({ children }) => {
     }, [accessToken])
 
     return (
-        <TaskContext.Provider value={{ task, setTask, createTask, allTasks, setAllTasks, deleteTask }}>
+        <TaskContext.Provider value={{ taskDraft, setTaskDraft, createTask, allTasks, deleteTask }}>
             {children}
         </TaskContext.Provider>
     )

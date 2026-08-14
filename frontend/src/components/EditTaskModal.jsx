@@ -4,7 +4,7 @@ function EditTaskModal({task, editTask, setEditTask}) {
 
   // const { taskDraft, setTaskDraft } = useTasks()
 
-  console.log(taskDraft, task, editTask)
+  console.log(editTask)
 
   const handleChange = (e) => {
     const {name, value} = e.target
@@ -97,7 +97,7 @@ function EditTaskModal({task, editTask, setEditTask}) {
             <input
               type="date"
               name="dueDate"
-              value={task.dueDate}
+              value={task.due_date}
               onChange={handleChange}
               className="w-full rounded-lg border border-gray-300 px-4 py-2 outline-none focus:border-[#4800FF] focus:ring-2 focus:ring-[#4800FF]/20"
             />

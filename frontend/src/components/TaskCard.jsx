@@ -1,6 +1,6 @@
 import { useTasks } from "../context/taskContext.jsx"
 
-const TaskCard = ({ task, editMode }) => {
+const TaskCard = ({ task, setEditTask }) => {
 
     const { deleteTask } = useTasks()
     // const priorityStyles = {
@@ -55,9 +55,7 @@ const TaskCard = ({ task, editMode }) => {
 
             {/* Due Date */}
             <div className="text-sm text-gray-600">
-                {task.dueDate
-                    ? new Date(task.dueDate).toLocaleDateString()
-                    : "No due date"}
+                {task.due_date ? task.due_date : "No due date"}
             </div>
 
             {/* Status */}
@@ -77,7 +75,7 @@ const TaskCard = ({ task, editMode }) => {
                 <button
                     type="button"
                     className="rounded-lg px-3 py-2 text-sm font-medium text-[#4800FF] transition hover:bg-purple-50"
-                    onClick={() => editMode(true)}
+                    onClick={() => setEditTask(task)}
                 >
                     Edit
                 </button>
