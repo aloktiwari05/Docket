@@ -1,6 +1,6 @@
 import { apiUrl } from "../api/api.js";
 
-const createTaskService = async (task, token) => {
+const createTaskService = async (taskDraft, token) => {
     try {
         const response = await fetch(`${apiUrl}/api/tasks/new`, {
             method: "POST",
@@ -8,7 +8,7 @@ const createTaskService = async (task, token) => {
                 authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(task),
+            body: JSON.stringify(taskDraft),
         });
 
         
@@ -36,7 +36,8 @@ const fetchTasksService = async (token, setAllTasks) => {
         const result = await response.json()
 
             const fetchedTasks = result.data
-            setAllTasks([...fetchedTasks])
+            const fixedTasks = fetchedTasks.map((task)=>({ ...task, due_date: task.due_date ? task.due_date.split('T')[0] : ''}))
+            setAllTasks([...fixedTasks])
     }
     catch (err) {
         console.log(err)
