@@ -1,10 +1,14 @@
-// import { useTasks } from '../context/taskContext.jsx'
+import { useTasks } from '../context/taskContext.jsx'
 
-function EditTaskModal({task, editTask, setEditTask}) {
+function EditTaskModal({editTask, setEditTask}) {
 
-  // const { taskDraft, setTaskDraft } = useTasks()
+  const taskID = editTask.task_id
+  console.log(taskID)
 
-  console.log(editTask)
+  const { updateTask } = useTasks()
+
+  // console.log("draft task: ",taskDraft)
+  console.log('edit task: ', editTask )
 
   const handleChange = (e) => {
     const {name, value} = e.target
@@ -13,10 +17,10 @@ function EditTaskModal({task, editTask, setEditTask}) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    updateTask(taskID, editTask);
 
   };
 
-  console.log(task)
   return (
     <div><div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
       <div className="w-full max-w-lg rounded-2xl bg-white shadow-2xl">
@@ -45,7 +49,7 @@ function EditTaskModal({task, editTask, setEditTask}) {
             <input
               type="text"
               name="title"
-              value={task.title}
+              value={editTask.title}
               onChange={handleChange}
               required
               placeholder="Enter task title"
@@ -62,7 +66,7 @@ function EditTaskModal({task, editTask, setEditTask}) {
             <textarea
               rows={4}
               name="description"
-              value={task.description}
+              value={editTask.description}
               onChange={handleChange}
               placeholder="Task description..."
               className="w-full resize-none rounded-lg border border-gray-300 px-4 py-2 outline-none focus:border-[#4800FF] focus:ring-2 focus:ring-[#4800FF]/20"
@@ -77,7 +81,7 @@ function EditTaskModal({task, editTask, setEditTask}) {
 
             <select
               name="priority"
-              value={task.priority}
+              value={editTask.priority}
               onChange={handleChange}
               className="w-full rounded-lg border border-gray-300 px-4 py-2 outline-none focus:border-[#4800FF] focus:ring-2 focus:ring-[#4800FF]/20"
             >
@@ -97,7 +101,7 @@ function EditTaskModal({task, editTask, setEditTask}) {
             <input
               type="date"
               name="dueDate"
-              value={task.due_date}
+              value={editTask.due_date}
               onChange={handleChange}
               className="w-full rounded-lg border border-gray-300 px-4 py-2 outline-none focus:border-[#4800FF] focus:ring-2 focus:ring-[#4800FF]/20"
             />
@@ -117,7 +121,7 @@ function EditTaskModal({task, editTask, setEditTask}) {
               type="submit"
               className="rounded-lg bg-[#4800FF] px-5 py-2 font-medium text-white transition hover:bg-[#3d00d6]"
             >
-              Add Task
+              Edit Task
             </button>
           </div>
         </form>
