@@ -6,12 +6,12 @@ import CreateTaskModal from "../components/createTaskModal.jsx";
 import EditTaskModal from "../components/EditTaskModal.jsx"
 
 function Tasks() {
-  const { allTasks, taskDraft } = useTasks()
+  const { allTasks } = useTasks()
   const [activeTab, setActiveTab] = useState("all");
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [editTask, setEditTask] = useState(null)
 
-  // console.log(editTask)
+  console.log(editTask)
 
   const [now] = useState(() => Date.now())
 
@@ -162,7 +162,7 @@ function Tasks() {
 
         {showTaskForm && (<CreateTaskModal setShowTaskForm={setShowTaskForm} />)}
 
-        {editTask && ( <EditTaskModal task={editTask} taskDraft={taskDraft} setEditTask={setEditTask} />)}
+        {editTask && ( <EditTaskModal editTask={editTask} setEditTask={setEditTask} />)}
 
 
       </section>

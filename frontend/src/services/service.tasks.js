@@ -11,7 +11,7 @@ const createTaskService = async (taskDraft, token) => {
             body: JSON.stringify(taskDraft),
         });
 
-        
+
         const result = await response.json();
         if (!response.ok) {
             throw new Error(result.message || "Failed to create task");
@@ -35,9 +35,32 @@ const fetchTasksService = async (token, setAllTasks) => {
 
         const result = await response.json()
 
-            const fetchedTasks = result.data
-            const fixedTasks = fetchedTasks.map((task)=>({ ...task, due_date: task.due_date ? task.due_date.split('T')[0] : ''}))
-            setAllTasks([...fixedTasks])
+        const fetchedTasks = result.data
+        const fixedTasks = fetchedTasks.map((task) => ({ ...task, due_date: task.due_date ? task.due_date.split('T')[0] : '' }))
+        setAllTasks([...fixedTasks])
+    }
+    catch (err) {
+        console.log(err)
+    }
+}
+
+const updateTaskService = async (token, task_id, task) => {
+
+    console.log(task)
+    try {
+        const response = await fetch(`${apiUrl}/api/tasks/update/${task_id}`,
+            {
+                method: 'PATCH',
+                headers: {
+                    authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(task)
+            })
+
+            const result = await response.json()
+
+        console.log(result)
     }
     catch (err) {
         console.log(err)
@@ -45,8 +68,8 @@ const fetchTasksService = async (token, setAllTasks) => {
 }
 
 const deleteTaskService = async (token, task_id) => {
-    try{
-        const response = await fetch(`${apiUrl}/api/tasks/delete/${task_id}`,{
+    try {
+        const response = await fetch(`${apiUrl}/api/tasks/delete/${task_id}`, {
             method: "DELETE",
             headers: {
                 authorization: `Bearer ${token}`
@@ -54,12 +77,12 @@ const deleteTaskService = async (token, task_id) => {
         })
         const result = await response.json()
 
-        if(!response.ok){
+        if (!response.ok) {
             throw new Error(result.message || "Failed to delete the task");
         }
         console.log(result)
     }
-    catch(err){
+    catch (err) {
         console.log(err)
     }
 }
@@ -67,5 +90,6 @@ const deleteTaskService = async (token, task_id) => {
 export {
     createTaskService,
     fetchTasksService,
+    updateTaskService,
     deleteTaskService,
 };
