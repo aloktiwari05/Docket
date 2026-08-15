@@ -20,12 +20,6 @@ function Tasks() {
   const completedCount = allTasks?.filter((task) => task.completed).length
   const overdueCount = allTasks.filter((task) => new Date(task.dueDate).getTime() < now && !task.completed).length
 
-  // const [allCount, setAllCount] = useState(allTasks?.length)
-  // const [pendingCount, setpendingCount] = useState(allTasks?.filter((task) => !task.completed).length)
-  // const [completedCount, setcompletedCount] = useState(allTasks?.filter((task) => task.completed).length)
-  // const [overdueCount, setoverdueCount] = useState(allTasks.filter((task) => new Date(task.dueDate).getTime() < now && !task.completed).length)
-
-
   // console.log(allTasks)
 
   const tabs = [

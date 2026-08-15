@@ -1,8 +1,19 @@
 import { Search, Bell, Film, CircleCheck, Clock, CircleAlert, Star, } from "lucide-react";
 import { useAuth } from "../context/authContext";
+import { useTasks } from "../context/taskContext";
+import { useState } from "react";
 
 function Dashboard() {
   const { user } = useAuth();
+
+  const { allTasks } = useTasks()
+
+  const [now] = useState(() => Date.now())
+  
+    const allCount = allTasks?.length
+    const pendingCount = allTasks?.filter((task) => !task.completed).length
+    const completedCount = allTasks?.filter((task) => task.completed).length
+    const overdueCount = allTasks.filter((task) => new Date(task.dueDate).getTime() < now && !task.completed).length
 
   return (
     <div className="w-full px-5 py-3 bg-gray-50 min-h-screen flex flex-col">
@@ -39,7 +50,7 @@ function Dashboard() {
               <div>
                 <p className="text-sm font-medium text-gray-500">Total Tasks</p>
                 <h2 className="mt-1 text-2xl font-bold text-gray-900">
-                  count
+                  {allCount ? allCount : 0}
                 </h2>
               </div>
 
@@ -55,7 +66,7 @@ function Dashboard() {
               <div>
                 <p className="text-sm font-medium text-gray-500">Completed</p>
                 <h2 className="mt-1 text-2xl font-bold text-gray-900">
-                  count
+                  {completedCount ? completedCount : 0}
                 </h2>
               </div>
 
@@ -71,7 +82,7 @@ function Dashboard() {
               <div>
                 <p className="text-sm font-medium text-gray-500">Pending</p>
                 <h2 className="mt-1 text-2xl font-bold text-gray-900">
-                  count
+                  {pendingCount ? pendingCount : 0}
                 </h2>
               </div>
 
@@ -87,7 +98,7 @@ function Dashboard() {
               <div>
                 <p className="text-sm font-medium text-gray-500">Overdue</p>
                 <h2 className="mt-1 text-2xl font-bold text-gray-900">
-                  count
+                  {overdueCount ? overdueCount : 0}
                 </h2>
               </div>
 
