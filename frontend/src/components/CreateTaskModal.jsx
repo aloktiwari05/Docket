@@ -16,7 +16,6 @@ const CreateTaskModal = ({ setShowTaskForm }) => {
     e.preventDefault();
 
     await createTask()
-    // Add API call here
 
     setTaskDraft({ title: "", description: "", priority: "medium", dueDate: "", });
     setShowTaskForm(false);
