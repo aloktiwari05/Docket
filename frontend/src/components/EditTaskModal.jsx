@@ -1,25 +1,45 @@
 import { useTasks } from '../context/taskContext.jsx'
 
-function EditTaskModal({editTask, setEditTask}) {
+function EditTaskModal({ editTask, setEditTask }) {
 
   const taskID = editTask.task_id
-  console.log(taskID)
+  const { updateTask, taskDraft, setTaskDraft } = useTasks()
 
-  const { updateTask } = useTasks()
+  console.log("draft task: ", taskDraft)
+  console.log('edit task: ', editTask)
 
-  // console.log("draft task: ",taskDraft)
-  console.log('edit task: ', editTask )
+  const compareChanges = () => {
 
-  const handleChange = (e) => {
-    const {name, value} = e.target
-    setEditTask(prev=>({...prev, [name]: value }))
+    const changes = Object.keys(taskDraft).filter(i => taskDraft[i] !== editTask[i]).reduce((acc, i) => {
+      acc[i] = editTask[i];
+      return acc;
+    }, {});
+
+    return changes;
   };
 
+
+  // Handle Change
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setEditTask(prev => ({ ...prev, [name]: value }))
+  };
+
+  // Handle Submit 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    updateTask(taskID, editTask);
 
+    const changedFields = compareChanges()
+    console.log(changedFields)
+    await updateTask(taskID, changedFields);
+    setTaskDraft({ title: "", description: "", priority: "medium", dueDate: "", });
+    setEditTask(null)
   };
+
+  const handleCancelButton = () => {
+    setTaskDraft({ title: "", description: "", priority: "medium", dueDate: "", });
+    setEditTask(null)
+  }
 
   return (
     <div><div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
@@ -111,7 +131,7 @@ function EditTaskModal({editTask, setEditTask}) {
           <div className="flex justify-end gap-3 pt-2">
             <button
               type="button"
-              onClick={() => setEditTask(null)}
+              onClick={handleCancelButton}
               className="rounded-lg border border-gray-300 px-5 py-2 font-medium text-gray-700 hover:bg-gray-100"
             >
               Cancel
