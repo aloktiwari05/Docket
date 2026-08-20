@@ -3,6 +3,9 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
+const types = pg.types
+types.setTypeParser(1082, function(val) { return val; });
+
 const db = new pg.Client({
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
