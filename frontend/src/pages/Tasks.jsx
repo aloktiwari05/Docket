@@ -11,14 +11,14 @@ function Tasks() {
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [editTask, setEditTask] = useState(null)
 
-  console.log(editTask)
+  // console.log(editTask)
 
   const [now] = useState(() => Date.now())
 
   const allCount = allTasks?.length
   const pendingCount = allTasks?.filter((task) => !task.completed).length
   const completedCount = allTasks?.filter((task) => task.completed).length
-  const overdueCount = allTasks.filter((task) => new Date(task.dueDate).getTime() < now && !task.completed).length
+  const overdueCount = allTasks.filter((task) => new Date(task.due_date).getTime() < now && !task.completed).length
 
   // console.log(allTasks)
 

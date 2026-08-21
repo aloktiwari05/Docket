@@ -5,8 +5,8 @@ function EditTaskModal({ editTask, setEditTask }) {
   const taskID = editTask.task_id
   const { updateTask, taskDraft, setTaskDraft } = useTasks()
 
-  console.log("draft task: ", taskDraft)
-  console.log('edit task: ', editTask)
+  // console.log("draft task: ", taskDraft)
+  console.log('edit task: ', editTask.due_date)
 
   const compareChanges = () => {
 
@@ -32,12 +32,12 @@ function EditTaskModal({ editTask, setEditTask }) {
     const changedFields = compareChanges()
     console.log(changedFields)
     await updateTask(taskID, changedFields);
-    setTaskDraft({ title: "", description: "", priority: "medium", dueDate: "", });
+    setTaskDraft({ title: "", description: "", priority: "medium", due_date: "", });
     setEditTask(null)
   };
 
   const handleCancelButton = () => {
-    setTaskDraft({ title: "", description: "", priority: "medium", dueDate: "", });
+    setTaskDraft({ title: "", description: "", priority: "medium", due_date: "", });
     setEditTask(null)
   }
 
@@ -120,7 +120,7 @@ function EditTaskModal({ editTask, setEditTask }) {
 
             <input
               type="date"
-              name="dueDate"
+              name="due_date"
               value={editTask.due_date}
               onChange={handleChange}
               className="w-full rounded-lg border border-gray-300 px-4 py-2 outline-none focus:border-[#4800FF] focus:ring-2 focus:ring-[#4800FF]/20"

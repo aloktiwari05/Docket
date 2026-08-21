@@ -13,7 +13,7 @@ function Dashboard() {
     const allCount = allTasks?.length
     const pendingCount = allTasks?.filter((task) => !task.completed).length
     const completedCount = allTasks?.filter((task) => task.completed).length
-    const overdueCount = allTasks.filter((task) => new Date(task.dueDate).getTime() < now && !task.completed).length
+    const overdueCount = allTasks.filter((task) => new Date(task.due_date).getTime() < now && !task.completed).length
 
   return (
     <div className="w-full px-5 py-3 bg-gray-50 min-h-screen flex flex-col">

@@ -36,8 +36,7 @@ const fetchTasksService = async (token, setAllTasks) => {
         const result = await response.json()
 
         const fetchedTasks = result.data
-        const fixedTasks = fetchedTasks.map((task) => ({ ...task, due_date: task.due_date ? task.due_date.split('T')[0] : '' }))
-        setAllTasks([...fixedTasks])
+        setAllTasks([...fetchedTasks])
     }
     catch (err) {
         console.log(err)
@@ -58,9 +57,11 @@ const updateTaskService = async (token, task_id, task) => {
                 body: JSON.stringify(task)
             })
 
-            const result = await response.json()
+        const result = await response.json()
 
-        console.log(result)
+        if (response.ok){
+            return result
+        }
     }
     catch (err) {
         console.log(err)

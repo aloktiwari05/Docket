@@ -11,28 +11,33 @@ const TaskProvider = ({ children }) => {
         title: "",
         description: "",
         priority: "medium",
-        dueDate: "",
+        due_date: "",
     });
 
     const [allTasks, setAllTasks] = useState([])
 
-    const createTask = async () =>{
+    console.log(allTasks)
+
+    const createTask = async () => {
         const newTask = await createTaskService(taskDraft, accessToken)
         setAllTasks(prev => ([...prev, newTask]))
     }
 
-    const deleteTask = async (taskID) =>{
+    const deleteTask = async (taskID) => {
         await deleteTaskService(accessToken, taskID)
-        setAllTasks((prev)=>(prev.filter(t=> t.task_id !== taskID)))
+        setAllTasks((prev) => (prev.filter(t => t.task_id !== taskID)))
     }
 
-    const updateTask = async (taskID, task) =>{
+    const updateTask = async (taskID, task) => {
 
-        try{
-            await updateTaskService(accessToken, taskID, task)
-            // console.log(response)
+        try {
+            const result = await updateTaskService(accessToken, taskID, task)
+            const data = result.data
+            // console.log(data)
+            setAllTasks(prev =>prev.map( task => ( task.task_id === data.task_id ? {...prev, ...data} : task)) )
+
         }
-        catch(err){
+        catch (err) {
             console.log(err)
         }
 
