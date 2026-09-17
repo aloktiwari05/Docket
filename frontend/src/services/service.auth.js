@@ -1,5 +1,6 @@
-import {apiUrl} from '../api/api.js'
+import { apiUrl } from '../api/api.js'
 import { toast } from 'react-toastify'
+
 
 const refreshService = async (setAccessToken, setIsLoading, setUser) => {
 
@@ -28,9 +29,31 @@ const refreshService = async (setAccessToken, setIsLoading, setUser) => {
     }
 }
 
+const registerService = async () => {
+
+}
+
+const loginService = async (formData) => {
+    const response = await fetch(`${apiUrl}/api/auth/login`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ ...formData })
+    })
+    const result = await response.json();
+
+    if (!response.ok) {
+        throw new Error(result.message)
+    }
+
+    return result
+}
+
 const logoutService = async () => {
     try {
-        const response = await fetch(`${apiUrl}/api/logout`, { method: 'POST', credentials: 'include'})
+        const response = await fetch(`${apiUrl}/api/logout`, { method: 'POST', credentials: 'include' })
         const result = await response.json()
         return result
     }
@@ -39,7 +62,9 @@ const logoutService = async () => {
     }
 }
 
-export{
+export {
     refreshService,
+    registerService,
+    loginService,
     logoutService,
 }
