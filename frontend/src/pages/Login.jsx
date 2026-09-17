@@ -1,36 +1,23 @@
 import { useState } from 'react'
-import { apiUrl } from '../api/api.js'
 import { useAuth } from '../context/authContext.jsx'
-import { useNavigate, Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 function Login() {
 
-  const {setAccessToken} = useAuth()
-  const [form, setForm] = useState({ identifier: '', password: '' })
+  const { login } = useAuth()
+  const [formData, setFormData] = useState({ identifier: '', password: '' })
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    try {
-      const response = await fetch(`${apiUrl}/api/auth/login`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ ...form })
-      })
-      const {message, accessToken} = await response.json();
-      setAccessToken(accessToken)
-      navigate('/dashboard')
+    const success = await login(formData)
 
-      console.log(message)
+    if(success){
+      navigate('/Dashboard')
     }
-    catch (err) {
-      console.log(err)
-    }
+
   }
-  console.log(form)
+  console.log(formData)
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-100 px-4">
@@ -57,9 +44,9 @@ function Login() {
           id="identifier"
           placeholder="Enter your email or username"
           autoComplete='username'
-          value={form.identifier}
+          value={formData.identifier}
           onChange={(e) =>
-            setForm((f) => ({
+            setFormData((f) => ({
               ...f,
               identifier: e.target.value,
             }))
@@ -83,9 +70,9 @@ function Login() {
           id="password"
           placeholder="Enter your password"
           autoComplete="current-password"
-          value={form.password}
+          value={formData.password}
           onChange={(e) =>
-            setForm((f) => ({
+            setFormData((f) => ({
               ...f,
               password: e.target.value,
             }))
