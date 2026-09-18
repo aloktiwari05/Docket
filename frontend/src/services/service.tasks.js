@@ -28,9 +28,9 @@ const createTaskService = async (taskDraft, token) => {
     }
 };
 
-const fetchTasksService = async (token, setAllTasks) => {
+const fetchTasksService = async (token, page) => {
     try {
-        const response = await fetch(`${apiUrl}/api/tasks/get`, {
+        const response = await fetch(`${apiUrl}/api/tasks/get?page=${page}`, {
             headers: {
                 authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
@@ -39,8 +39,11 @@ const fetchTasksService = async (token, setAllTasks) => {
 
         const result = await response.json()
 
-        const fetchedTasks = result.data
-        setAllTasks([...fetchedTasks])
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to fetch tasks")
+        }
+
+        return result
     }
     catch (err) {
         toast.error(err.message)
@@ -64,7 +67,7 @@ const updateTaskService = async (token, task_id, task) => {
         const result = await response.json()
         toast.success(result.message)
 
-        if (response.ok){
+        if (response.ok) {
             return result
         }
     }
@@ -95,6 +98,8 @@ const deleteTaskService = async (token, task_id) => {
         console.log(err)
     }
 }
+
+
 
 export {
     createTaskService,
