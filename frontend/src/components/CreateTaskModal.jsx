@@ -99,8 +99,8 @@ const CreateTaskModal = ({ setShowTaskForm }) => {
 
             <input
               type="date"
-              name="dueDate"
-              value={taskDraft.dueDate}
+              name="due_date"
+              value={taskDraft.due_date}
               onChange={handleChange}
               className="w-full rounded-lg border border-gray-300 px-4 py-2 outline-none focus:border-[#4800FF] focus:ring-2 focus:ring-[#4800FF]/20"
             />
