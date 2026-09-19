@@ -12,14 +12,47 @@ function Tasks() {
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [editTask, setEditTask] = useState(null)
 
-  // console.log(editTask)
-
-  const [now] = useState(() => Date.now())
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+  const day = String(now.getDate()).padStart(2, '0');
+  const today = `${year}${month}${day}`;
 
   const allCount = allTasks?.length
-  const pendingCount = allTasks?.filter((task) => !task.completed).length
-  const completedCount = allTasks?.filter((task) => task.completed).length
-  const overdueCount = allTasks.filter((task) => new Date(task.due_date).getTime() < now && !task.completed).length
+  const pendingCount = allTasks?.filter((task) => task.status === 'pending').length
+  const completedCount = allTasks?.filter((task) => task.status === 'completed').length
+  const overdueCount = allTasks.filter((task) => { return task.due_date?.replaceAll('-', '') < today && task.status !== 'completed'; }).length
+
+  const renderTasks = () => {
+
+    switch (activeTab) {
+      case "all":
+        return allTasks.map((task) => (
+          <TaskCard key={task.task_id} task={task} setEditTask={setEditTask} />
+        ));
+
+      case "pending":
+        return allTasks.filter((task) => task.status === "pending").map((task) => (
+          <TaskCard key={task.task_id} task={task} setEditTask={setEditTask} />
+        ));
+
+      case "completed":
+        return allTasks.filter((task) => task.status === "completed").map((task) => (
+          <TaskCard key={task.task_id} task={task} setEditTask={setEditTask} />
+        ));
+
+      case "overdue": {
+
+        return allTasks
+          .filter((task) => {
+            return task.due_date?.replaceAll('-', '') < today && task.status !== 'completed';
+          })
+          .map((task) => (
+            <TaskCard key={task.task_id} task={task} setEditTask={setEditTask} />
+          ));
+      }
+    }
+  }
 
   // console.log(allTasks)
 
@@ -118,9 +151,7 @@ function Tasks() {
             </p>
           </div>
         ) : (
-          allTasks.map((task) => (
-            <TaskCard key={task.task_id} task={task} setEditTask={setEditTask} />
-          ))
+          renderTasks()
         )}
 
 
