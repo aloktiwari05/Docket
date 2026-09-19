@@ -24,13 +24,16 @@ const createTask = async (req, res) => {
 }
 
 const getTasks = async (req, res) => {
-    const userId = req.user.id
+    const userId = req.user.id;
+    const { page = 1 } = req.query;
+    const limit = 5;
+    const offset = (page - 1) * limit;
 
     try {
-        const result = await db.query('SELECT task_id, title, description, status, priority, due_date FROM tasks WHERE user_id = $1', [userId])
+        const result = await db.query('SELECT task_id, title, description, status, priority, due_date FROM tasks WHERE user_id = $1 ORDER BY task_id DESC OFFSET $2 LIMIT $3', [userId, offset, limit])
 
         if (result.rows.length === 0) {
-            return res.status(404).json({ message: 'No tasks available !' })
+            return res.status(404).json({ message: 'No tasks available !', data: [] })
         }
         const data = result.rows
         // console.log(data)
@@ -97,5 +100,5 @@ export {
     createTask,
     getTasks,
     updateTask,
-    deleteTask
+    deleteTask,
 }
