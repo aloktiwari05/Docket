@@ -2,7 +2,7 @@ import { useState, } from "react";
 import { Plus } from "lucide-react";
 import { useTasks } from '../context/taskContext.jsx'
 import TaskCard from '../components/TaskCard.jsx'
-import CreateTaskModal from "../components/createTaskModal.jsx";
+import CreateTaskModal from "../components/CreateTaskModal.jsx";
 import EditTaskModal from "../components/EditTaskModal.jsx";
 import Pagination from "../components/Pagination.jsx";
 
@@ -23,38 +23,72 @@ function Tasks() {
   const completedCount = allTasks?.filter((task) => task.status === 'completed').length
   const overdueCount = allTasks.filter((task) => { return task.due_date?.replaceAll('-', '') < today && task.status !== 'completed'; }).length
 
-  const renderTasks = () => {
-
+  const getFilteredTasks = () => {
     switch (activeTab) {
       case "all":
-        return allTasks.map((task) => (
-          <TaskCard key={task.task_id} task={task} setEditTask={setEditTask} />
-        ));
+        return allTasks;
 
       case "pending":
-        return allTasks.filter((task) => task.status === "pending").map((task) => (
-          <TaskCard key={task.task_id} task={task} setEditTask={setEditTask} />
-        ));
+        return allTasks.filter(
+          (task) => task.status === "pending"
+        );
 
       case "completed":
-        return allTasks.filter((task) => task.status === "completed").map((task) => (
-          <TaskCard key={task.task_id} task={task} setEditTask={setEditTask} />
-        ));
+        return allTasks.filter(
+          (task) => task.status === "completed"
+        );
 
-      case "overdue": {
+      case "overdue":
+        return allTasks.filter(
+          (task) =>
+            task.due_date?.replaceAll("-", "") < today &&
+            task.status !== "completed"
+        );
 
-        return allTasks
-          .filter((task) => {
-            return task.due_date?.replaceAll('-', '') < today && task.status !== 'completed';
-          })
-          .map((task) => (
-            <TaskCard key={task.task_id} task={task} setEditTask={setEditTask} />
-          ));
-      }
+      default:
+        return [];
     }
-  }
+  };
 
-  // console.log(allTasks)
+  const getEmptyMessage = () => {
+    switch (activeTab) {
+      case "all":
+        return "No tasks yet !";
+
+      case "pending":
+        return "No pending tasks !";
+
+      case "completed":
+        return "Complete a task and it will appear here !";
+
+
+      case "overdue":
+        return "No overdue tasks !";
+
+      default:
+        return "No tasks available !";
+    }
+  };
+
+  const renderTasks = () => {
+    const tasks = getFilteredTasks();
+
+    if (tasks.length === 0) {
+      return (
+        <div className="h-full w-full flex items-center justify-center text-gray-500 text-xl">
+          <p>{getEmptyMessage()}</p>
+        </div>
+      );
+    }
+
+    return tasks.map((task) => (
+      <TaskCard
+        key={task.task_id}
+        task={task}
+        setEditTask={setEditTask}
+      />
+    ));
+  };
 
   const tabs = [
     { id: "all", label: "All", count: allCount },
@@ -99,15 +133,7 @@ function Tasks() {
             </button>
           ))}
         </div>
-
-        <select className="mb-3 rounded-lg border border-gray-300 px-4 py-2 text-sm outline-none focus:border-[#4800FF] focus:ring-2 focus:ring-[#4800FF]/20">
-          <option>Filter by Category</option>
-          <option>Work</option>
-          <option>Personal</option>
-          <option>Study</option>
-        </select>
-      </div
-      >
+      </div>
       {/* Table Header */}
 
       <div className={`grid grid-cols-[minmax(0,2fr)_minmax(120px,1fr)_minmax(100px,1fr)_minmax(120px,1fr)_minmax(110px,1fr)_minmax(150px,1.2fr)] items-center gap-4 px-4 border-b bg-white shadow-sm border-gray-200 rounded-t-2xl py-3`}>
@@ -151,6 +177,7 @@ function Tasks() {
             </p>
           </div>
         ) : (
+
           renderTasks()
         )}
 
