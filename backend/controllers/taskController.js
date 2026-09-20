@@ -48,8 +48,8 @@ const getTasks = async (req, res) => {
 
 const updateTask = async (req, res) => {
 
-    const taskID = Number(req.params.taskid)
-    const userID = Number(req.user.id)
+    const taskId = Number(req.params.taskid)
+    const userId = Number(req.user.id)
     const allowedFields = ['title', 'description', 'priority', 'due_date']
 
     const task = req.body
@@ -66,7 +66,7 @@ const updateTask = async (req, res) => {
     const userIdNumber = `$${keys.length + 2}`
 
     try {
-        const result = await db.query(`UPDATE tasks SET ${columnsToUpdate.join(", ")} WHERE task_id = ${setIdNumber} AND user_id = ${userIdNumber} RETURNING task_id, title, description, status, priority, due_date`, [...values, taskID, userID])
+        const result = await db.query(`UPDATE tasks SET ${columnsToUpdate.join(", ")} WHERE task_id = ${setIdNumber} AND user_id = ${userIdNumber} RETURNING task_id, title, description, status, priority, due_date`, [...values, taskId, userId])
         console.log(result.rows)
         if (result.rows.length === 0) {
             return res.status(404).json({ message: "Task not found !" })
@@ -80,10 +80,11 @@ const updateTask = async (req, res) => {
 }
 
 const deleteTask = async (req, res) => {
-    const taskID = Number(req.params.taskid);
+    const taskId = Number(req.params.taskid);
+    const userId = Number(req.user.id)
 
     try {
-        const result = await db.query('DELETE FROM tasks WHERE task_id = $1', [taskID])
+        const result = await db.query('DELETE FROM tasks WHERE task_id = $1 AND user_id = $2 ', [taskId, userId])
 
         if (result.rowCount === 0) {
             return res.status(404).json({ message: 'Task not found' })
@@ -96,9 +97,48 @@ const deleteTask = async (req, res) => {
     }
 }
 
+const getStats = async (req, res) => {
+    const userId = req.user.id
+
+    try {
+        const result = await db.query(
+            `SELECT 
+                COUNT(*) AS total_tasks,
+                COUNT(*) FILTER (WHERE status = 'pending') AS pending_tasks,
+                COUNT(*) FILTER (WHERE status = 'completed') AS completed_tasks,
+                COUNT(*) FILTER (
+                    WHERE status != 'completed' 
+                    AND due_date < CURRENT_DATE
+                ) AS due_tasks
+             FROM tasks
+             WHERE user_id = $1;`,
+            [userId]
+        )
+
+        const { total_tasks, pending_tasks, completed_tasks, due_tasks} = result.rows[0]
+
+        const totalTasks = Number(total_tasks)
+        const limit = 5
+        const pageCount = Math.ceil(totalTasks / limit)
+
+        return res.status(200).json({
+            totalTasks,
+            pendingTasks: Number(pending_tasks),
+            completedTasks: Number(completed_tasks),
+            overdueTasks: Number(due_tasks),
+            pageCount
+        })
+    }
+    catch (err) {
+        console.error(err)
+        return res.status(500).json({ message: 'Internal Server Error!'})
+    }
+}
+
 export {
     createTask,
     getTasks,
     updateTask,
     deleteTask,
+    getStats,
 }

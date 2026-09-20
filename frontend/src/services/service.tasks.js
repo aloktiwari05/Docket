@@ -99,11 +99,29 @@ const deleteTaskService = async (token, task_id) => {
     }
 }
 
+const fetchStatsService = async (token) => {
+    try {
+        const result = fetch(`${apiUrl}/api/tasks/stats`, {
+            headers: {
+                authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            }
+        })
 
+        const data = (await result).json()
+
+        return data;
+
+    }
+    catch (err) {
+        console.log(err)
+    }
+}
 
 export {
     createTaskService,
     fetchTasksService,
     updateTaskService,
     deleteTaskService,
+    fetchStatsService,
 };
