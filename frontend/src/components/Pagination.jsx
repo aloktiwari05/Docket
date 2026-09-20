@@ -3,36 +3,48 @@ import { useTasks } from '../context/taskContext'
 
 function Pagination() {
 
-  const { setPage } = useTasks();
+  const { stats: { pageCount, totalTasks }, pageNumber, setPageNumber } = useTasks();
+  const pages = [];
+  const tasksPerPage = 5
+
+  const startTask = (pageNumber - 1) * tasksPerPage + 1
+  const endTask = Math.min(pageNumber * tasksPerPage, totalTasks)
+
+  for (let i = 1; i <= pageCount; i++) {
+    pages.push(i)
+  }
+
+  if (pageCount === 0) {
+    return null
+  }
 
   return (
     <div className="mt-6 flex items-center justify-between">
-          <p className="text-sm text-gray-500">
-            Showing <span className="font-medium">1-10</span> of{" "}
-            <span className="font-medium">24</span> tasks
-          </p>
+      <p className="text-sm text-gray-500">
+        Showing <span className="font-medium">{(startTask === endTask) ? startTask : `${startTask}-${endTask}`}</span> of{" "}
+        <span className="font-medium">{totalTasks}</span> tasks
+      </p>
 
-          <div className="flex items-center gap-2">
-            {/* Previous */}
-            <button className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-sm transition hover:bg-gray-100 hover:shadow">
-              <ChevronLeft size={18} />
-            </button>
+      <div className="flex items-center gap-2">
+        {/* Previous */}
+        {pageNumber > 1 &&
+          (<button onClick={() => setPageNumber(prev => prev - 1)} className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-sm transition hover:bg-gray-100 hover:shadow" aria-label="Previous page">
+            <ChevronLeft size={18} />
+          </button>)}
 
-            {/* Page Numbers */}
-            <button onClick={()=>setPage(1)}className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-200 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-100 hover:shadow">
-              1
-            </button>
+        {/* Page Numbers */}
+        {pages.map((page) => <button key={page} onClick={() => setPageNumber(page)} className={`flex h-10 w-10 items-center justify-center rounded-lg text-sm font-medium shadow-sm transition hover:shadow ${page === pageNumber ? 'bg-[#3d00d6] text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-100'}`}>
+          {page}
+        </button>)}
 
-            <button onClick={()=>setPage(2)} className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-200 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-100 hover:shadow">
-              2
-            </button>
+        {/* Next */}
+        {pageNumber < pageCount &&
+          (<button onClick={() => setPageNumber(prev => prev + 1)} className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-sm transition hover:bg-gray-100 hover:shadow" aria-label="Next page">
+            <ChevronRight size={18} />
+          </button>)}
 
-            {/* Next */}
-            <button className="flex h-10 w-10 items-center justify-center rounded-lg bg-white shadow-sm transition hover:bg-gray-100 hover:shadow">
-              <ChevronRight size={18} />
-            </button>
-          </div>
-        </div>
+      </div>
+    </div>
 
   )
 }

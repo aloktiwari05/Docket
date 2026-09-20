@@ -1,13 +1,14 @@
 import { useState, createContext, useContext, useEffect, useCallback } from "react";
-import { fetchTasksService, createTaskService, deleteTaskService, updateTaskService } from '../services/service.tasks.js'
+import { fetchTasksService, createTaskService, deleteTaskService, updateTaskService,fetchStatsService } from '../services/service.tasks.js'
 import { useAuth } from '../context/authContext.jsx'
 // import { toast } from 'react-toastify'
 
 const TaskContext = createContext()
 const TaskProvider = ({ children }) => {
 
-    // const [isFetching, setIsFetching] = useState(true)
     const { accessToken } = useAuth()
+    const [allTasks, setAllTasks] = useState([])
+    const [pageNumber, setPageNumber] = useState(1)
     const [taskDraft, setTaskDraft] = useState({
         title: "",
         description: "",
@@ -15,26 +16,39 @@ const TaskProvider = ({ children }) => {
         due_date: "",
     });
 
-    const [allTasks, setAllTasks] = useState([])
-    const [page, setPage] = useState(1)
+    const [stats, setStats] = useState({
+        totalTasks : "",
+        pendingTasks : "",
+        completedTasks : "",
+        overdueTasks : "",
+        pageCount : "",
+    })
 
-    console.log(allTasks)
+    console.log(stats)
+
+    const fetchTotalStats = useCallback(async () => {
+        const result = await fetchStatsService(accessToken)
+        setStats(prev => ({...prev, ...result}))
+
+    },[accessToken])
 
     const fetchTasks = useCallback(async () => {
-        const result = await fetchTasksService(accessToken, page)
+        const result = await fetchTasksService(accessToken, pageNumber)
         const fetchedTasks = result.data
         setAllTasks([...fetchedTasks])
-    },[accessToken, page])
+    },[accessToken, pageNumber])
 
     const createTask = async () => {
         await createTaskService(taskDraft, accessToken)
         await fetchTasks()
+        await fetchTotalStats()
     }
 
     const deleteTask = async (taskID) => {
         await deleteTaskService(accessToken, taskID)
         setAllTasks((prev) => (prev.filter(t => t.task_id !== taskID)))
         await fetchTasks()
+        await fetchTotalStats()
     }
 
     const updateTask = async (taskID, task) => {
@@ -44,6 +58,7 @@ const TaskProvider = ({ children }) => {
             const data = result.data
             setAllTasks(prev => prev.map(task => (task.task_id === data.task_id ? { ...prev, ...data } : task)))
             await fetchTasks()
+            await fetchTotalStats()
         }
         catch (err) {
             console.log(err)
@@ -54,11 +69,11 @@ const TaskProvider = ({ children }) => {
     useEffect(() => {
         if (!accessToken) return;
         fetchTasks()
-
-    }, [accessToken, fetchTasks,])
+        fetchTotalStats()
+    }, [accessToken, fetchTasks, fetchTotalStats])
 
     return (
-        <TaskContext.Provider value={{ taskDraft, setTaskDraft, createTask, allTasks, deleteTask, updateTask, page, setPage }}>
+        <TaskContext.Provider value={{ taskDraft, setTaskDraft, createTask, allTasks, deleteTask, updateTask, pageNumber, setPageNumber, stats, setStats }}>
             {children}
         </TaskContext.Provider>
     )
