@@ -1,20 +1,23 @@
+import { useNavigate } from "react-router-dom"
 import { useTasks } from "../context/taskContext.jsx"
 
 const TaskCard = ({ task, setEditTask }) => {
 
     const { deleteTask, setTaskDraft } = useTasks()
-    
+    const navigate = useNavigate()
     const handleEditButton = () => {
-        setEditTask({...task})
-        setTaskDraft({...task})
+        setEditTask({ ...task })
+        setTaskDraft({ ...task })
     }
+    
+    const id = task.task_id
 
     return (
         <div
             className={`grid grid-cols-[minmax(0,2fr)_minmax(120px,1fr)_minmax(100px,1fr)_minmax(120px,1fr)_minmax(110px,1fr)_minmax(150px,1.2fr)] items-center gap-4 px-4 border-b border-gray-100 py-4`}
         >
             {/* Task */}
-            <div className="min-w-0">
+            <div className="min-w-0 hover:bg-gray-100" onClick={()=>navigate(`/task/${id}`)}>
                 <h3 className="truncate font-medium text-gray-900">
                     {task.title}
                 </h3>

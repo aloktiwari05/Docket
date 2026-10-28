@@ -1,6 +1,7 @@
 import { useState, createContext, useContext, useEffect, useCallback } from "react";
 import { fetchTasksService, createTaskService, deleteTaskService, updateTaskService,fetchStatsService } from '../services/service.tasks.js'
 import { useAuth } from '../context/authContext.jsx'
+import { searchTasksService } from "../services/service.tasks.js";
 // import { toast } from 'react-toastify'
 
 const TaskContext = createContext()
@@ -9,33 +10,30 @@ const TaskProvider = ({ children }) => {
     const { accessToken } = useAuth()
     const [allTasks, setAllTasks] = useState([])
     const [pageNumber, setPageNumber] = useState(1)
-    const [taskDraft, setTaskDraft] = useState({
-        title: "",
-        description: "",
-        priority: "medium",
-        due_date: "",
-    });
+    const [editTask, setEditTask] = useState(null)
+
+    const [taskDraft, setTaskDraft] = useState({ title: "", description: "", priority: "medium", due_date: null});
 
     const [stats, setStats] = useState({
-        totalTasks : "",
-        pendingTasks : "",
-        completedTasks : "",
-        overdueTasks : "",
-        pageCount : "",
+        totalTasks : 0,
+        pendingTasks : 0,
+        completedTasks : 0,
+        overdueTasks : 0,
+        pageCount : 0,
+        todaysTasks : [],
+        upcomingTasks : [],
     })
 
-    console.log(stats)
 
     const fetchTotalStats = useCallback(async () => {
-        const result = await fetchStatsService(accessToken)
-        setStats(prev => ({...prev, ...result}))
-
+        const data = await fetchStatsService(accessToken)
+        setStats(prev => ({...prev, ...data}))
     },[accessToken])
 
     const fetchTasks = useCallback(async () => {
         const result = await fetchTasksService(accessToken, pageNumber)
         const fetchedTasks = result.data
-        setAllTasks([...fetchedTasks])
+        setAllTasks(fetchedTasks)
     },[accessToken, pageNumber])
 
     const createTask = async () => {
@@ -46,7 +44,7 @@ const TaskProvider = ({ children }) => {
 
     const deleteTask = async (taskID) => {
         await deleteTaskService(accessToken, taskID)
-        setAllTasks((prev) => (prev.filter(t => t.task_id !== taskID)))
+        // setAllTasks((prev) => (prev.filter(t => t.task_id !== taskID)))
         await fetchTasks()
         await fetchTotalStats()
     }
@@ -54,9 +52,9 @@ const TaskProvider = ({ children }) => {
     const updateTask = async (taskID, task) => {
 
         try {
-            const result = await updateTaskService(accessToken, taskID, task)
-            const data = result.data
-            setAllTasks(prev => prev.map(task => (task.task_id === data.task_id ? { ...prev, ...data } : task)))
+            await updateTaskService(accessToken, taskID, task)
+            // const data = result.data
+            // setAllTasks(prev => prev.map(task => (task.task_id === data.task_id ? { ...prev, ...data } : task)))
             await fetchTasks()
             await fetchTotalStats()
         }
@@ -66,14 +64,21 @@ const TaskProvider = ({ children }) => {
 
     }
 
+    const searchTasks = useCallback(async (search) => {
+        if(!accessToken) return;
+        const result = await searchTasksService(accessToken, search)
+        return result.data
+    }, [accessToken])
+
     useEffect(() => {
         if (!accessToken) return;
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchTasks()
         fetchTotalStats()
     }, [accessToken, fetchTasks, fetchTotalStats])
 
     return (
-        <TaskContext.Provider value={{ taskDraft, setTaskDraft, createTask, allTasks, deleteTask, updateTask, pageNumber, setPageNumber, stats, setStats }}>
+        <TaskContext.Provider value={{ taskDraft, setTaskDraft, createTask, allTasks, deleteTask, updateTask, pageNumber, setPageNumber, stats, editTask, setEditTask, searchTasks }}>
             {children}
         </TaskContext.Provider>
     )
@@ -91,5 +96,6 @@ const useTasks = () => {
 
 export {
     TaskProvider,
+    // eslint-disable-next-line react-refresh/only-export-components
     useTasks
 }

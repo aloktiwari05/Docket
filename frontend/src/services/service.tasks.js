@@ -86,12 +86,12 @@ const deleteTaskService = async (token, task_id) => {
             }
         })
         const result = await response.json()
-        toast.success(result.message)
-
+        
         if (!response.ok) {
             toast.error(result.message)
             throw new Error(result.message || "Failed to delete the task");
         }
+        toast.success(result.message)
     }
     catch (err) {
         toast.error(err.message)
@@ -101,16 +101,15 @@ const deleteTaskService = async (token, task_id) => {
 
 const fetchStatsService = async (token) => {
     try {
-        const result = fetch(`${apiUrl}/api/tasks/stats`, {
+        const response = await fetch(`${apiUrl}/api/tasks/stats`, {
             headers: {
                 authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
             }
         })
 
-        const data = (await result).json()
-
-        return data;
+        const result = await response.json()
+        return result.data;
 
     }
     catch (err) {
@@ -118,10 +117,30 @@ const fetchStatsService = async (token) => {
     }
 }
 
+const searchTasksService = async (token, search) => {
+
+    const params = new URLSearchParams({ q: search });
+
+    const response = await fetch(`${apiUrl}/api/tasks/search?${params}`, {
+        headers: {
+            authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+        },
+    });
+
+    const result = await response.json();
+    if (!response.ok) {
+        throw new Error(result.message || "Failed to search tasks");
+    }
+
+    return result;
+};
+
 export {
     createTaskService,
     fetchTasksService,
     updateTaskService,
     deleteTaskService,
     fetchStatsService,
+    searchTasksService,
 };

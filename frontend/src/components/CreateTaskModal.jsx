@@ -17,7 +17,7 @@ const CreateTaskModal = ({ setShowTaskForm }) => {
 
     await createTask()
 
-    setTaskDraft({ title: "", description: "", priority: "medium", dueDate: "", });
+    setTaskDraft({ title: "", description: "", priority: "medium", due_date: null });
     setShowTaskForm(false);
   };
   return (
