@@ -11,6 +11,7 @@ import Tasks from './pages/Tasks.jsx'
 import Calendar from './pages/Calendar.jsx'
 import Notes from './pages/Notes.jsx'
 import Settings from './pages/Settings.jsx'
+import Task from './pages/Task.jsx'
 import { createBrowserRouter, createRoutesFromElements, RouterProvider, Route, } from 'react-router-dom'
 import { AuthProvider } from './context/authContext.jsx'
 import ProtectedRoutes from './routes/ProtectedRoutes.jsx'
@@ -26,6 +27,7 @@ const router = createBrowserRouter(createRoutesFromElements(
         <Route path='calendar' element={<Calendar />} />
         <Route path='notes' element={<Notes />} />
         <Route path='settings' element={<Settings />} />
+        
       </Route>
     </Route>
     <Route path='/login' element={<Login />} />
