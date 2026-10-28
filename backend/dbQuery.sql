@@ -7,7 +7,7 @@ email varchar(255) unique not null,
 bio varchar(255),
 password_hash text not null,
 refresh_token text unique
-);
+)
 
 CREATE TABLE tasks (
     task_id SERIAL PRIMARY KEY,
@@ -21,4 +21,14 @@ CREATE TABLE tasks (
     due_date DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+)
+
+SELECT 
+COUNT(*) AS total_tasks,
+COUNT(CASE WHEN status = 'completed' THEN 1 END) AS completed_tasks,
+COUNT(CASE WHEN status = 'pending' THEN 1 END) AS pending_tasks
+FROM tasks;
+
+SELECT task_id, task_name, due_date, status 
+FROM tasks 
+WHERE due_date = CURRENT_DATE;
