@@ -53,8 +53,6 @@ const TaskProvider = ({ children }) => {
 
         try {
             await updateTaskService(accessToken, taskID, task)
-            // const data = result.data
-            // setAllTasks(prev => prev.map(task => (task.task_id === data.task_id ? { ...prev, ...data } : task)))
             await fetchTasks()
             await fetchTotalStats()
         }
