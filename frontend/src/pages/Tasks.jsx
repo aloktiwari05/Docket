@@ -1,4 +1,5 @@
 import { useState, } from "react";
+// import { useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { useTasks } from '../context/taskContext.jsx'
 import TaskCard from '../components/TaskCard.jsx'
@@ -7,10 +8,10 @@ import EditTaskModal from "../components/EditTaskModal.jsx";
 import Pagination from "../components/Pagination.jsx";
 
 function Tasks() {
-  const { allTasks } = useTasks()
+  const { allTasks, editTask, setEditTask } = useTasks()
   const [activeTab, setActiveTab] = useState("all");
   const [showTaskForm, setShowTaskForm] = useState(false);
-  const [editTask, setEditTask] = useState(null)
+  // const navigate = useNavigate()
 
   const now = new Date();
   const year = now.getFullYear();
