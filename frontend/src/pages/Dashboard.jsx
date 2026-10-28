@@ -1,22 +1,17 @@
 import { Search, Bell, Film, CircleCheck, Clock, CircleAlert, Star, } from "lucide-react";
 import { useAuth } from "../context/authContext";
 import { useTasks } from "../context/taskContext";
-import { useState } from "react";
+import TaskSearch from "../components/TaskSearch";
+// import { useState } from "react";
 
 function Dashboard() {
+
+  // const [search, setSearch] = useState("")
   const { user } = useAuth();
-
-  const { allTasks } = useTasks()
-
-  const [now] = useState(() => Date.now())
-  
-    const allCount = allTasks?.length
-    const pendingCount = allTasks?.filter((task) => !task.completed).length
-    const completedCount = allTasks?.filter((task) => task.completed).length
-    const overdueCount = allTasks.filter((task) => new Date(task.due_date).getTime() < now && !task.completed).length
+  const { stats: { totalTasks, pendingTasks, completedTasks, overdueTasks, todaysTasks, upcomingTasks } } = useTasks()
 
   return (
-    <div className="w-full px-5 py-3 bg-gray-50 min-h-screen flex flex-col">
+    <div className="w-full px-5 py-3 bg-gray-50 min-h-screen flex flex-col overflow-y-hidden">
 
       <div className="flex items-center w-full min-h-16">
         <div>
@@ -28,11 +23,13 @@ function Dashboard() {
           </p>
         </div>
 
-        <div className="ml-auto flex items-center gap-4">
-          <div className="relative w-100">
+        <div className="ml-auto flex  items-center gap-4">
+          {/* <div className="relative w-100">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input type="text" placeholder="Search tasks..." className="w-full pl-12 pr-4 py-2 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#4800FF]" />
-          </div>
+            <input type="text" onChange={handleSearch} placeholder="Search tasks..." className="w-full pl-12 pr-4 py-2 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#4800FF]" />
+          </div> */}
+
+          <TaskSearch/>
 
           <button className="p-2.5 rounded-full hover:bg-gray-200 transition">
             <Bell className="w-6 h-6 text-gray-700" />
@@ -50,7 +47,7 @@ function Dashboard() {
               <div>
                 <p className="text-sm font-medium text-gray-500">Total Tasks</p>
                 <h2 className="mt-1 text-2xl font-bold text-gray-900">
-                  {allCount ? allCount : 0}
+                  {totalTasks}
                 </h2>
               </div>
 
@@ -66,7 +63,7 @@ function Dashboard() {
               <div>
                 <p className="text-sm font-medium text-gray-500">Completed</p>
                 <h2 className="mt-1 text-2xl font-bold text-gray-900">
-                  {completedCount ? completedCount : 0}
+                  {completedTasks}
                 </h2>
               </div>
 
@@ -82,7 +79,7 @@ function Dashboard() {
               <div>
                 <p className="text-sm font-medium text-gray-500">Pending</p>
                 <h2 className="mt-1 text-2xl font-bold text-gray-900">
-                  {pendingCount ? pendingCount : 0}
+                  {pendingTasks}
                 </h2>
               </div>
 
@@ -98,7 +95,7 @@ function Dashboard() {
               <div>
                 <p className="text-sm font-medium text-gray-500">Overdue</p>
                 <h2 className="mt-1 text-2xl font-bold text-gray-900">
-                  {overdueCount ? overdueCount : 0}
+                  {overdueTasks}
                 </h2>
               </div>
 
@@ -112,43 +109,51 @@ function Dashboard() {
 
       <section className="mt-6 mb-1 flex-1 flex gap-6 min-h-0">
 
-        <div className="w-md bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        <div className="min-w-1/2 bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-gray-900">
               Today's Tasks
             </h2>
-
-            <button className="text-sm font-medium text-[#4800FF] hover:underline">
-              View All
-            </button>
           </div>
 
           {/* Task Item */}
-          <div className="flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:bg-gray-50 transition">
-            <div className="flex items-center gap-4">
-              <input
-                type="checkbox"
-                className="w-5 h-5 accent-[#4800FF] cursor-pointer"
-              />
+          {todaysTasks && todaysTasks.length > 0 ? (
+            todaysTasks.map((task) => (
+              <div
+                key={task.task_id}
+                className="flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:bg-gray-50 transition"
+              >
+                <div className="flex items-center gap-4">
+                  <input
+                    type="checkbox"
+                    className="w-5 h-5 accent-[#4800FF] cursor-pointer"
+                  />
 
-              <div>
-                <h3 className="font-semibold text-gray-900">
-                  Complete UI Dashboard
-                </h3>
-                <p className="text-sm text-gray-500">
-                  Due Today
-                </p>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">
+                      {task.title}
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      {task.due_date}
+                    </p>
+                  </div>
+                </div>
+
+                <button className="p-2 rounded-lg hover:bg-yellow-100 transition">
+                  <Star className="w-5 h-5 text-yellow-500" />
+                </button>
               </div>
-            </div>
-
-            <button className="p-2 rounded-lg hover:bg-yellow-100 transition">
-              <Star className="w-5 h-5 text-yellow-500" />
-            </button>
-          </div>
+            ))
+          ) : (
+            <p className="w-full h-full flex items-center justify-center text-center text-gray-500 py-6">
+              No task available
+            </p>
+          )}
         </div>
 
-        <div className="flex-1 bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+        {/* Optional : might look to implement in future if needed */}
+        {/* <div className="flex-1 bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-gray-900">
               Tasks by Category
@@ -166,7 +171,7 @@ function Dashboard() {
               Graph Section
             </p>
           </div>
-        </div>
+        </div> */}
 
         {/* Upcoming Deadlines */}
         <div className="flex-1 bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
@@ -175,34 +180,43 @@ function Dashboard() {
               Upcoming Deadlines
             </h2>
 
-            <button className="text-sm font-medium text-[#4800FF] hover:underline">
-              View All
-            </button>
           </div>
 
-          <div className="space-y-4">
+          {upcomingTasks && upcomingTasks.length > 0 ? (
+            upcomingTasks.map((task) => (
+              <div key={task.task_id} className="space-y-4">
+                <div className="flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:bg-gray-50 transition">
+                  <div className="text-center bg-gray-100 h-15 w-15 rounded-lg">
+                    <p className="text-xs bg-purple-100 text-[#4800FF] rounded-t-xl">
+                      {task.month}
+                    </p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      {task.day}
+                    </p>
+                  </div>
 
-            <div className="flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:bg-gray-50 transition">
-              <div className="text-center bg-gray-100 h-15 w-15 rounded-lg">
-                <p className="text-xs bg-purple-100 text-[#4800FF] rounded-t-xl">JUL</p>
-                <p className="text-2xl font-bold text-gray-900">25</p>
+                  <div className="flex-1 ml-4">
+                    <h3 className="font-semibold text-gray-900">
+                      {task.title}
+                    </h3>
+                    <p className="text-xs text-gray-500">
+                      In {task.days_until_due} Days
+                    </p>
+                  </div>
+
+                  <span className="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-semibold">
+                    {task.priority}
+                  </span>
+                </div>
               </div>
-
-              <div className="flex-1 ml-4">
-                <h3 className="font-semibold text-gray-900">
-                  Team Meeting
-                </h3>
-                <p className="text-xs text-gray-500">In 3 Days</p>
-              </div>
-
-              <span className="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-semibold">
-                Medium
-              </span>
-            </div>
-
-          </div>
-          
+            ))
+          ) : (
+            <p className="flex items-center justify-center h-full w-full text-center text-gray-500 py-6">
+              No upcoming tasks available
+            </p>
+          )}
         </div>
+
       </section>
     </div>
   );
