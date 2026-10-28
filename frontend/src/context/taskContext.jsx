@@ -44,7 +44,6 @@ const TaskProvider = ({ children }) => {
 
     const deleteTask = async (taskID) => {
         await deleteTaskService(accessToken, taskID)
-        // setAllTasks((prev) => (prev.filter(t => t.task_id !== taskID)))
         await fetchTasks()
         await fetchTotalStats()
     }

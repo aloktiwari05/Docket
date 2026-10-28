@@ -48,9 +48,10 @@ const updateTask = async (req, res) => {
 
     const taskId = Number(req.params.taskid)
     const userId = Number(req.user.id)
-    const allowedFields = ['title', 'description', 'priority', 'due_date']
+    const allowedFields = ['title', 'description', 'priority', 'due_date', 'status']
 
     const task = req.body
+    console.log(task)
 
     const keys = Object.keys(task).filter(key => allowedFields.includes(key))
 

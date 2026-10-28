@@ -17,8 +17,7 @@ function EditTaskModal({ editTask, setEditTask }) {
 
     return changes;
   };
-
-
+  
   // Handle Change
   const handleChange = (e) => {
     const { name, value } = e.target
