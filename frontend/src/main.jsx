@@ -27,6 +27,7 @@ const router = createBrowserRouter(createRoutesFromElements(
         <Route path='calendar' element={<Calendar />} />
         <Route path='notes' element={<Notes />} />
         <Route path='settings' element={<Settings />} />
+        <Route path='task/:id' element={<Task/>}/>
         
       </Route>
     </Route>
