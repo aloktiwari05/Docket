@@ -11,7 +11,6 @@ function Tasks() {
   const { allTasks, editTask, setEditTask } = useTasks()
   const [activeTab, setActiveTab] = useState("all");
   const [showTaskForm, setShowTaskForm] = useState(false);
-  // const navigate = useNavigate()
 
   const now = new Date();
   const year = now.getFullYear();
