@@ -1,5 +1,4 @@
 import { useState, } from "react";
-// import { useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { useTasks } from '../context/taskContext.jsx'
 import TaskCard from '../components/TaskCard.jsx'
@@ -96,102 +95,128 @@ function Tasks() {
     { id: "completed", label: "Completed", count: completedCount },
     { id: "overdue", label: "Overdue", count: overdueCount },
   ];
+    
 
-  return (
-    <div className="flex min-h-screen w-full flex-col bg-gray-50 px-5 py-3">
-
-      {/* <button className='border-xl bg-amber-300 w-md p-3' onClick={() => {fetchTasksService(accessToken)}}>Fetch Tasks</button> This  line is simply for testing purpose. */}
-      {/* Header */}
-      <section className="mb-5 flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Tasks</h1>
-          <p className="text-gray-500">All your tasks in one place</p>
-        </div>
-
-        <button
-          onClick={() => setShowTaskForm(true)}
-          className="flex items-center gap-2 rounded-lg bg-[#4800FF] px-5 py-3 font-medium text-white shadow-md transition hover:bg-[#3d00d6]"
-        >
-          <Plus size={18} />
-          New Task
-        </button>
-      </section>
-
-      {/* Filters */}
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-gray-200 pb-0">
-        <div className="flex flex-wrap items-end gap-2">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`border-b-2 px-6 py-3 text-sm font-medium transition-all duration-200 ${activeTab === tab.id
-                ? "border-[#4800FF] bg-[#4800FF]/5 text-[#4800FF]"
-                : "border-transparent text-gray-600 hover:border-gray-300 hover:text-gray-900"
-                }`}
-            >
-              {tab.label} ({tab.count})
-            </button>
-          ))}
-        </div>
+return (
+  <div className="flex min-h-screen w-full flex-col bg-gray-50 px-3 py-5 sm:px-5 lg:px-8">
+    {/* Header */}
+    <section className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+          Tasks
+        </h1>
+        <p className="mt-1 text-sm text-gray-500 sm:text-base">
+          All your tasks in one place
+        </p>
       </div>
-      {/* Table Header */}
 
-      <div className={`grid grid-cols-[minmax(0,2fr)_minmax(120px,1fr)_minmax(100px,1fr)_minmax(120px,1fr)_minmax(110px,1fr)_minmax(150px,1.2fr)] items-center gap-4 px-4 border-b bg-white shadow-sm border-gray-200 rounded-t-2xl py-3`}>
-        <div className="font-medium text-sm text-gray-600">
+      <button
+        type="button"
+        onClick={() => setShowTaskForm(true)}
+        className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#4800FF] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#3d00d6] focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 sm:w-auto"
+      >
+        <Plus size={18} />
+        New Task
+      </button>
+    </section>
+
+    {/* Filters */}
+    <div className="mb-5 overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
+      <div className="flex min-w-max items-center gap-1 px-2 pt-2 sm:px-3">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => setActiveTab(tab.id)}
+            aria-pressed={activeTab === tab.id}
+            className={`whitespace-nowrap border-b-2 px-3 py-3 text-sm font-medium transition sm:px-5 ${
+              activeTab === tab.id
+                ? "border-[#4800FF] bg-purple-50 text-[#4800FF]"
+                : "border-transparent text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+            }`}
+          >
+            {tab.label}
+            <span className="ml-1.5 text-xs opacity-75">
+              ({tab.count})
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
+
+    {/* Task list */}
+    <section className="flex flex-1 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+      {/* Desktop/tablet table header */}
+      <div className="hidden grid-cols-[minmax(0,2fr)_minmax(85px,.85fr)_minmax(75px,.75fr)_minmax(95px,.95fr)_minmax(90px,.85fr)_minmax(115px,1.1fr)] items-center gap-2 border-b border-gray-200 bg-gray-50 px-4 py-4 lg:grid lg:gap-3 lg:px-5">
+        <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
           Task
-        </div>
-
-        <div className="font-medium text-sm pl-1 text-gray-600">
+        </span>
+        <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
           Category
-        </div>
-
-        <div className="font-medium text-sm pl-3 text-gray-600">
+        </span>
+        <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
           Priority
-        </div>
-
-        <div className="font-medium text-sm pl-3 text-gray-600">
+        </span>
+        <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
           Due Date
-        </div>
-
-        <div className="font-medium text-sm pl-3 text-gray-600">
+        </span>
+        <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
           Status
-        </div>
-
-        <div className="font-medium text-sm pl-7 text-gray-600">
+        </span>
+        <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
           Actions
-        </div>
+        </span>
       </div>
+
       {/* Content */}
-
-      <section className="flex flex-1 flex-col rounded-b-2xl bg-white p-5 shadow-sm overflow-y-auto">
-
-        {/* Empty State */}
+      <div className="flex-1">
         {allTasks.length === 0 ? (
-          <div className="px-4 py-12 text-center">
-            <p className="text-gray-500">
-              No tasks available. Click{" "}
-              <span className="font-semibold text-[#4800FF]">
-                "New Task"
-              </span>{" "}
-              to create one.
+          <div className="flex flex-col items-center justify-center px-5 py-16 text-center">
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-purple-50">
+              <Plus size={26} className="text-[#4800FF]" />
+            </div>
+
+            <h2 className="text-base font-semibold text-gray-900">
+              No tasks yet
+            </h2>
+
+            <p className="mt-2 max-w-sm text-sm leading-6 text-gray-500">
+              Create your first task to start organizing your work.
             </p>
+
+            <button
+              type="button"
+              onClick={() => setShowTaskForm(true)}
+              className="mt-5 rounded-lg bg-[#4800FF] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#3d00d6]"
+            >
+              Create your first task
+            </button>
           </div>
         ) : (
-
           renderTasks()
         )}
+      </div>
+    </section>
 
-
-        {showTaskForm && (<CreateTaskModal setShowTaskForm={setShowTaskForm} />)}
-
-        {editTask && (<EditTaskModal editTask={editTask} setEditTask={setEditTask} />)}
-
-      </section>
-
-      {/* Pagination */}
+    {/* Pagination */}
+    <div className="mt-5">
       <Pagination />
     </div>
-  );
+
+    {/* Modals */}
+    {showTaskForm && (
+      <CreateTaskModal setShowTaskForm={setShowTaskForm} />
+    )}
+
+    {editTask && (
+      <EditTaskModal
+        editTask={editTask}
+        setEditTask={setEditTask}
+      />
+    )}
+  </div>
+);
+
 }
 
 export default Tasks;
