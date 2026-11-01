@@ -8,7 +8,7 @@ const saltRounds = parseInt(process.env.BCRYPT_SALT_ROUNDS)
 // Login POST route
 
 const login = async (req, res) => {
-    
+
     const formData = req.body;
     try {
         const result = await db.query('SELECT id, email, username, password_hash FROM users WHERE email = ($1) or username = ($1)', [formData.identifier])
@@ -88,6 +88,7 @@ const signup = async (req, res) => {
 
 const refresh = async (req, res) => {
     try {
+
         const refreshToken = req.cookies?.refreshToken
 
         if (!refreshToken) {
@@ -103,35 +104,61 @@ const refresh = async (req, res) => {
             return res.status(404).json({ message: 'Invalid access attempt' })
         }
 
-        const { id, username, email, refresh_token } = data.rows[0]
+        const { id, email, username, refresh_token } = data.rows[0]
 
         if (refresh_token !== refreshToken) {
-            // console.log('refresh token: ',refreshToken, 'db token: ', refresh_token)
+
             return res.status(401).json({ message: 'Invalid credentials ! Kindly Login again' })
         }
 
         const accessToken = generateAccessToken(id)
         const newRefreshToken = generateRefreshToken(id)
-        await saveRefreshToken(id, newRefreshToken)
+
+        const updatedUser = await db.query('UPDATE users SET refresh_token = ($1) WHERE id = ($2) AND refresh_token = ($3) RETURNING id, username, email, refresh_token', [newRefreshToken, id, refreshToken])
+
+        if (updatedUser.rows.length === 0 ) {
+            return res.status(401).json({
+                message: "Refresh token is no longer valid. Please authenticate again !"
+            });
+        }
 
         setRefreshTokenCookie(res, newRefreshToken)
-        return res.status(200).json({ message: 'success !', user: { id, username, email }, accessToken })
+        return res.status(200).json({ message: 'success !', user: { id, username, email}, accessToken })
 
     } catch (err) {
 
-        res.clearCookie("refreshToken", {
-            httpOnly: true,
-            sameSite: "lax",
-            secure: true,
-        });
+        console.log(err)
+        if (err.name === "TokenExpiredError") {
+            res.clearCookie("refreshToken", {
+                httpOnly: true,
+                sameSite: "lax",
+                secure: true,
+                path: "/"
+            });
 
-        if (err.name === 'TokenExpiredError') {
-            return res.status(401).json({ message: 'Refresh token expired. Please Login again !' })
+            return res.status(401).json({
+                message: "Refresh token expired. Please log in again."
+            });
         }
-        if (err.name === 'JsonWebTokenError') {
-            return res.status(401).json({ message: 'Invalid refresh token !' })
+
+        if (err.name === "JsonWebTokenError") {
+            res.clearCookie("refreshToken", {
+                httpOnly: true,
+                sameSite: "lax",
+                secure: true,
+                path: "/"
+            });
+
+            return res.status(401).json({
+                message: "Invalid refresh token. Please log in again."
+            });
         }
-        res.status(500).json({ message: 'Internal Server Error !' })
+
+        console.error("Refresh failed:", err.message);
+
+        return res.status(500).json({
+            message: "Internal server error."
+        });
     }
 
 }
