@@ -15,11 +15,19 @@ types.setTypeParser(20, function (val) {
 });
 
 const db = new pg.Pool({
+    connectionString: process.env.DATABASE_URL || undefined,
+
+    // Local database settings (used when DATABASE_URL is not set)
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     host: process.env.HOST,
     port: process.env.DB_PORT,
-    database: 'todoapp'
+    database: process.env.DB_NAME || 'todoapp',
+
+    // Neon requires an encrypted connection.
+    ssl: process.env.DATABASE_URL
+        ? { rejectUnauthorized: false }
+        : false
 })
 
 await db.connect();
