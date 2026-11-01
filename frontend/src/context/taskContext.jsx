@@ -11,9 +11,7 @@ const TaskProvider = ({ children }) => {
     const [allTasks, setAllTasks] = useState([])
     const [pageNumber, setPageNumber] = useState(1)
     const [editTask, setEditTask] = useState(null)
-
-    const [taskDraft, setTaskDraft] = useState({ title: "", description: "", priority: "medium", due_date: null});
-
+    
     const [stats, setStats] = useState({
         totalTasks : 0,
         pendingTasks : 0,
@@ -36,8 +34,8 @@ const TaskProvider = ({ children }) => {
         setAllTasks(fetchedTasks)
     },[accessToken, pageNumber])
 
-    const createTask = async () => {
-        await createTaskService(taskDraft, accessToken)
+    const createTask = async (task) => {
+        await createTaskService(task, accessToken)
         await fetchTasks()
         await fetchTotalStats()
     }
@@ -82,7 +80,7 @@ const TaskProvider = ({ children }) => {
     }, [accessToken, fetchTasks, fetchTotalStats])
 
     return (
-        <TaskContext.Provider value={{ taskDraft, setTaskDraft, createTask, allTasks, deleteTask, updateTask, pageNumber, setPageNumber, stats, editTask, setEditTask, searchTasks, toggleStatus }}>
+        <TaskContext.Provider value={{ createTask, allTasks, deleteTask, updateTask, pageNumber, setPageNumber, stats, editTask, setEditTask, searchTasks, toggleStatus }}>
             {children}
         </TaskContext.Provider>
     )

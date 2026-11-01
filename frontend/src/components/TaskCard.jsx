@@ -5,11 +5,10 @@ const TaskCard = ({ task, setEditTask }) => {
 
     const id = task.task_id
 
-    const { deleteTask, setTaskDraft, toggleStatus } = useTasks()
+    const { deleteTask, toggleStatus } = useTasks()
     const navigate = useNavigate()
     const handleEditButton = () => {
         setEditTask(task)
-        setTaskDraft(task)
     }
 
     return (
