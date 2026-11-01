@@ -65,14 +65,12 @@ const updateTaskService = async (token, task_id, task) => {
             })
 
         const result = await response.json()
-        toast.success(result.message)
 
         if (response.ok) {
             return result
         }
     }
     catch (err) {
-        toast.error(err.message)
         console.log(err)
     }
 }
