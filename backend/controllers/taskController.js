@@ -120,9 +120,9 @@ const getStats = async (req, res) => {
 
         }
 
-        const { rows: todaysTasks } = await db.query(`SELECT task_id, title, description, status, priority, due_date FROM tasks WHERE user_id = $1 AND due_date = CURRENT_DATE AND status = 'pending'`, [userId])
+        const { rows: todaysTasks } = await db.query(`SELECT task_id, title, description, status, priority, due_date FROM tasks WHERE user_id = $1 AND due_date = CURRENT_DATE`, [userId])
 
-        const { rows: upcomingTasks } = await db.query(`SELECT task_id, title, description, status, priority, EXTRACT(DAY FROM due_date) AS day, TO_CHAR(due_date, 'Mon') AS month, due_date - CURRENT_DATE AS days_until_due FROM tasks WHERE user_id = $1 AND due_date > CURRENT_DATE AND status = 'pending'`, [userId])
+        const { rows: upcomingTasks } = await db.query(`SELECT task_id, title, description, status, priority, EXTRACT(DAY FROM due_date) AS day, TO_CHAR(due_date, 'Mon') AS month, due_date - CURRENT_DATE AS days_until_due FROM tasks WHERE user_id = $1 AND due_date > CURRENT_DATE`, [userId])
         const totalTasks = Number(countStats.totalTasks)
         const limit = 5
         const pageCount = Math.ceil(totalTasks / limit)
