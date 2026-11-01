@@ -14,7 +14,7 @@ types.setTypeParser(20, function (val) {
     return parseInt(val, 10)
 });
 
-const db = new pg.Client({
+const db = new pg.Pool({
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     host: process.env.HOST,
