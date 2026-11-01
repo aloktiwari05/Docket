@@ -1,14 +1,14 @@
-import { Search, Bell, Film, CircleCheck, Clock, CircleAlert, Star, } from "lucide-react";
+import { Bell, Film, CircleCheck, Clock, CircleAlert, Star, CheckCircle2, Check, } from "lucide-react";
 import { useAuth } from "../context/authContext";
 import { useTasks } from "../context/taskContext";
 import TaskSearch from "../components/TaskSearch";
-// import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
 
-  // const [search, setSearch] = useState("")
   const { user } = useAuth();
-  const { stats: { totalTasks, pendingTasks, completedTasks, overdueTasks, todaysTasks, upcomingTasks } } = useTasks()
+  const navigate = useNavigate();
+  const { stats: { totalTasks, pendingTasks, completedTasks, overdueTasks, todaysTasks, upcomingTasks }, toggleStatus } = useTasks()
 
   return (
     <div className="w-full px-5 py-3 bg-gray-50 min-h-screen flex flex-col overflow-y-hidden">
@@ -29,7 +29,7 @@ function Dashboard() {
             <input type="text" onChange={handleSearch} placeholder="Search tasks..." className="w-full pl-12 pr-4 py-2 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#4800FF]" />
           </div> */}
 
-          <TaskSearch/>
+          <TaskSearch />
 
           <button className="p-2.5 rounded-full hover:bg-gray-200 transition">
             <Bell className="w-6 h-6 text-gray-700" />
@@ -120,30 +120,64 @@ function Dashboard() {
           {/* Task Item */}
           {todaysTasks && todaysTasks.length > 0 ? (
             todaysTasks.map((task) => (
+
               <div
                 key={task.task_id}
-                className="flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:bg-gray-50 transition"
+                className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-200 ${task.status === "completed"
+                  ? "bg-green-50/70 border-green-200 hover:bg-green-50"
+                  : "bg-white border-gray-100 hover:bg-gray-50"
+                  }`}
               >
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 min-w-0">
                   <input
                     type="checkbox"
-                    className="w-5 h-5 accent-[#4800FF] cursor-pointer"
+                    checked={task.status === "completed"}
+                    onChange={() => toggleStatus(task)}
+                    aria-label={`Mark ${task.title} as ${task.status === "completed" ? "pending" : "completed"
+                      }`}
+                    className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded accent-green-600"
                   />
 
-                  <div>
-                    <h3 className="font-semibold text-gray-900">
+                  <div
+                    onClick={() => navigate(`/task/${task.task_id}`)}
+                    className="min-w-0 cursor-pointer"
+                  >
+                    <div
+                      className={`font-semibold transition-colors ${task.status === "completed"
+                        ? "text-gray-400 line-through"
+                        : "text-gray-900"
+                        }`}
+                    >
                       {task.title}
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      {task.due_date}
-                    </p>
+                    </div>
+
+                    <div
+                      className={`text-sm mt-1 ${task.status === "completed"
+                        ? "text-green-600"
+                        : "text-gray-500"
+                        }`}
+                    >
+                      {task.status === "completed"
+                        ? "Completed"
+                        : `Due : ${task.due_date}`}
+                    </div>
                   </div>
                 </div>
 
-                <button className="p-2 rounded-lg hover:bg-yellow-100 transition">
-                  <Star className="w-5 h-5 text-yellow-500" />
-                </button>
+                <div className="flex items-center gap-3 shrink-0">
+                  {task.status === "completed" && (
+                    <span className="hidden sm:inline-flex items-center gap-1 text-xs font-medium text-green-700 bg-green-100 px-2.5 py-1 rounded-full">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      Done
+                    </span>
+                  )}
+
+                  <button className="p-2 rounded-lg hover:bg-yellow-100 transition">
+                    <Star className="w-5 h-5 text-yellow-500" />
+                  </button>
+                </div>
               </div>
+
             ))
           ) : (
             <p className="w-full h-full flex items-center justify-center text-center text-gray-500 py-6">
@@ -184,29 +218,70 @@ function Dashboard() {
 
           {upcomingTasks && upcomingTasks.length > 0 ? (
             upcomingTasks.map((task) => (
-              <div key={task.task_id} className="space-y-4">
-                <div className="flex items-center justify-between p-4 rounded-xl border border-gray-100 hover:bg-gray-50 transition">
-                  <div className="text-center bg-gray-100 h-15 w-15 rounded-lg">
-                    <p className="text-xs bg-purple-100 text-[#4800FF] rounded-t-xl">
+              <div key={task.task_id} className="space-y-4" onClick={()=>navigate(`/task/${task.task_id}`)}>
+                <div
+                  className={`flex items-center justify-between p-4 rounded-xl border transition ${task.status === "completed"
+                      ? "border-green-200 bg-green-50/50"
+                      : "border-gray-100 hover:bg-gray-50"
+                    }`}
+                >
+                  {/* Date */}
+                  <div
+                    className={`text-center h-15 w-15 rounded-lg ${task.status === "completed"
+                        ? "bg-green-100"
+                        : "bg-gray-100"
+                      }`}
+                  >
+                    <p
+                      className={`text-xs rounded-t-xl ${task.status === "completed"
+                          ? "bg-green-200 text-green-700"
+                          : "bg-purple-100 text-[#4800FF]"
+                        }`}
+                    >
                       {task.month}
                     </p>
+
                     <p className="text-2xl font-bold text-gray-900">
                       {task.day}
                     </p>
                   </div>
 
+                  {/* Task Details */}
                   <div className="flex-1 ml-4">
-                    <h3 className="font-semibold text-gray-900">
-                      {task.title}
-                    </h3>
-                    <p className="text-xs text-gray-500">
-                      In {task.days_until_due} Days
+                    <div className="flex items-center gap-2">
+                      <h3
+                        className={`font-semibold ${task.status === "completed"
+                            ? "text-gray-500 line-through"
+                            : "text-gray-900"
+                          }`}
+                      >
+                        {task.title}
+                      </h3>
+
+                      {task.status === "completed" && (
+                        <CheckCircle2
+                          size={16}
+                          className="text-green-600 shrink-0"
+                        />
+                      )}
+                    </div>
+
+                    <p className="text-xs text-gray-500 mt-1">
+                      {task.status === "pending" &&`Due in ${task.days_until_due} Days`}
                     </p>
                   </div>
 
-                  <span className="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-semibold">
-                    {task.priority}
-                  </span>
+                  {/* Status / Priority */}
+                  {task.status === "completed" ? (
+                    <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-semibold flex items-center gap-1">
+                      <Check size={12} />
+                      Completed
+                    </span>
+                  ) : (
+                    <span className="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-semibold">
+                      {task.priority}
+                    </span>
+                  )}
                 </div>
               </div>
             ))

@@ -67,6 +67,13 @@ const TaskProvider = ({ children }) => {
         return result.data
     }, [accessToken])
 
+      const toggleStatus = async (task) => {
+
+    const newStatus = task.status === "completed" ? { status: "pending" } : { status: "completed" }
+    console.log(newStatus)
+    await updateTask(task.task_id, newStatus);
+  }
+
     useEffect(() => {
         if (!accessToken) return;
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -75,7 +82,7 @@ const TaskProvider = ({ children }) => {
     }, [accessToken, fetchTasks, fetchTotalStats])
 
     return (
-        <TaskContext.Provider value={{ taskDraft, setTaskDraft, createTask, allTasks, deleteTask, updateTask, pageNumber, setPageNumber, stats, editTask, setEditTask, searchTasks }}>
+        <TaskContext.Provider value={{ taskDraft, setTaskDraft, createTask, allTasks, deleteTask, updateTask, pageNumber, setPageNumber, stats, editTask, setEditTask, searchTasks, toggleStatus }}>
             {children}
         </TaskContext.Provider>
     )
