@@ -3,7 +3,6 @@ import { useTasks } from '../context/taskContext.jsx';
 import EditTaskModal from '../components/EditTaskModal.jsx';
 import { Pencil, Trash2, CalendarDays, Flag, CheckCircle2, CircleDashed } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify'
 
 function Task() {
   const { allTasks, editTask, setEditTask, deleteTask, searchTasks } = useTasks();

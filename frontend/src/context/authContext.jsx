@@ -16,7 +16,6 @@ const AuthProvider = ({ children }) => {
             setUser(result.user)
 
             return true
-
         }
         catch(err){
             toast.error(err.message)
@@ -35,7 +34,7 @@ const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         refreshService(setAccessToken, setIsLoading, setUser, login );
-    }, [])
+    }, [isLoading])
 
     return (
         <AuthContext.Provider value={{ accessToken, setAccessToken, isLoading, setIsLoading, user, setUser, login, logout }}>

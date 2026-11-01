@@ -5,18 +5,11 @@ const TaskCard = ({ task, setEditTask }) => {
 
     const id = task.task_id
 
-    const { deleteTask, setTaskDraft, updateTask } = useTasks()
+    const { deleteTask, setTaskDraft, toggleStatus } = useTasks()
     const navigate = useNavigate()
     const handleEditButton = () => {
         setEditTask(task)
         setTaskDraft(task)
-    }
-
-    const handleStatusToggle = async () => {
-
-        const newStatus = task.status === "completed" ? {status : "pending"} : {status : "completed"}
-        console.log(newStatus)
-        await updateTask(id, newStatus);
     }
 
     return (
@@ -31,7 +24,7 @@ const TaskCard = ({ task, setEditTask }) => {
                     <input
                         type="checkbox"
                         checked={task.status === "completed"}
-                        onChange={handleStatusToggle}
+                        onChange={()=>toggleStatus(task)}
                         aria-label={`Mark ${task.title} as ${task.status === "completed" ? "pending" : "completed"
                             }`}
                         className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border-gray-300 accent-[#4800FF]"
@@ -130,7 +123,7 @@ const TaskCard = ({ task, setEditTask }) => {
                         <input
                             type="checkbox"
                             checked={task.status === "completed"}
-                            onChange={handleStatusToggle}
+                            onChange={toggleStatus}
                             aria-label={`Mark ${task.title} as ${task.status === "completed" ? "pending" : "completed"
                                 }`}
                             className="mt-1 h-4 w-4 shrink-0 cursor-pointer rounded border-gray-300 accent-[#4800FF] focus:ring-2 focus:ring-purple-500"
