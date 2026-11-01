@@ -1,10 +1,12 @@
 // import React from 'react'
-import { useTasks } from '../context/taskContext.jsx'
+import { useTasks } from '../context/taskContext.jsx';
+import { useState } from 'react';
 
 const CreateTaskModal = ({ setShowTaskForm }) => {
 
-  const { taskDraft, setTaskDraft, createTask } = useTasks()
+  const { createTask } = useTasks()
 
+      const [taskDraft, setTaskDraft] = useState({ title: "", description: "", priority: "medium", due_date: null});
   
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -15,7 +17,7 @@ const CreateTaskModal = ({ setShowTaskForm }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await createTask()
+    await createTask(taskDraft)
 
     setTaskDraft({ title: "", description: "", priority: "medium", due_date: null });
     setShowTaskForm(false);

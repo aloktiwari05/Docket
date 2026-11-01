@@ -3,20 +3,7 @@ import { useTasks } from '../context/taskContext.jsx'
 function EditTaskModal({ editTask, setEditTask }) {
 
   const taskID = editTask.task_id
-  const { updateTask, taskDraft, setTaskDraft } = useTasks()
-
-  // console.log("draft task: ", taskDraft)
-  console.log('edit task: ', editTask.due_date)
-
-  const compareChanges = () => {
-
-    const changes = Object.keys(taskDraft).filter(i => taskDraft[i] !== editTask[i]).reduce((acc, i) => {
-      acc[i] = editTask[i];
-      return acc;
-    }, {});
-
-    return changes;
-  };
+  const { updateTask } = useTasks()
   
   // Handle Change
   const handleChange = (e) => {
@@ -27,21 +14,16 @@ function EditTaskModal({ editTask, setEditTask }) {
   // Handle Submit 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const changedFields = compareChanges()
-    console.log(changedFields)
-    await updateTask(taskID, changedFields);
-    setTaskDraft({ title: "", description: "", priority: "medium", due_date: null, });
+    await updateTask(taskID, editTask);
     setEditTask(null)
   };
 
   const handleCancelButton = () => {
-    setTaskDraft({ title: "", description: "", priority: "medium", due_date: "", });
     setEditTask(null)
   }
 
   return (
-<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 sm:p-6">
+<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 sm:p-6" onClick={(e) => e.stopPropagation()}>
   <div className="w-full max-w-xl overflow-hidden rounded-2xl bg-white shadow-2xl">
 
     {/* Header */}
