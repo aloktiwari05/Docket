@@ -1,5 +1,5 @@
 import { apiUrl } from "../api/api.js";
-import { toast } from 'react-toastify'
+import { toast } from 'react-toastify';
 
 const createTaskService = async (taskDraft, token) => {
     try {
@@ -12,68 +12,70 @@ const createTaskService = async (taskDraft, token) => {
             body: JSON.stringify(taskDraft),
         });
 
-
         const result = await response.json();
         if (!response.ok) {
             throw new Error(result.message || "Failed to create task");
         }
 
-        console.log("Task created successfully:", result);
-
-        toast.success(result.message)
-
+        toast.success(result.message || "Task created successfully!");
         return result.data;
     } catch (err) {
-        toast.error(err)
+        toast.error(err.message || "Failed to create task");
+        throw err;
     }
 };
 
-const fetchTasksService = async (token, page) => {
+const fetchTasksService = async (token, page = 1) => {
     try {
         const response = await fetch(`${apiUrl}/api/tasks/get?page=${page}`, {
             headers: {
                 authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
             }
-        })
+        });
 
-        const result = await response.json()
+        const result = await response.json();
+
+        // 404 or empty is not a system failure - user simply has no tasks
+        if (response.status === 404) {
+            return { data: [], message: result.message || "No tasks available" };
+        }
 
         if (!response.ok) {
-            throw new Error(result.message || "Failed to fetch tasks")
+            throw new Error(result.message || "Failed to fetch tasks");
         }
 
-        return result
+        return { data: result.data || [], message: result.message };
+    } catch (err) {
+        console.error("fetchTasksService error:", err.message);
+        return { data: [] };
     }
-    catch (err) {
-        toast.error(err.message)
-        console.log(err)
-    }
-}
+};
 
 const updateTaskService = async (token, task_id, task) => {
-
     try {
-        const response = await fetch(`${apiUrl}/api/tasks/update/${task_id}`,
-            {
-                method: 'PATCH',
-                headers: {
-                    authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(task)
-            })
+        const response = await fetch(`${apiUrl}/api/tasks/update/${task_id}`, {
+            method: 'PATCH',
+            headers: {
+                authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(task)
+        });
 
-        const result = await response.json()
+        const result = await response.json();
 
-        if (response.ok) {
-            return result
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to update task");
         }
+
+        toast.success(result.message || "Task updated successfully!");
+        return result;
+    } catch (err) {
+        toast.error(err.message || "Failed to update task");
+        throw err;
     }
-    catch (err) {
-        console.log(err)
-    }
-}
+};
 
 const deleteTaskService = async (token, task_id) => {
     try {
@@ -82,20 +84,21 @@ const deleteTaskService = async (token, task_id) => {
             headers: {
                 authorization: `Bearer ${token}`
             }
-        })
-        const result = await response.json()
-        
+        });
+
+        const result = await response.json();
+
         if (!response.ok) {
-            toast.error(result.message)
-            throw new Error(result.message || "Failed to delete the task");
+            throw new Error(result.message || "Failed to delete task");
         }
-        toast.success(result.message)
+
+        toast.success(result.message || "Task deleted successfully!");
+        return result;
+    } catch (err) {
+        toast.error(err.message || "Failed to delete task");
+        throw err;
     }
-    catch (err) {
-        toast.error(err.message)
-        console.log(err)
-    }
-}
+};
 
 const fetchStatsService = async (token) => {
     try {
@@ -104,34 +107,41 @@ const fetchStatsService = async (token) => {
                 authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
             }
-        })
+        });
 
-        const result = await response.json()
+        const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to fetch stats");
+        }
+
         return result.data;
-
+    } catch (err) {
+        console.error("Stats fetch error:", err.message);
+        return null;
     }
-    catch (err) {
-        console.log(err)
-    }
-}
+};
 
 const searchTasksService = async (token, search) => {
+    try {
+        const params = new URLSearchParams({ q: search });
 
-    const params = new URLSearchParams({ q: search });
+        const response = await fetch(`${apiUrl}/api/tasks/search?${params}`, {
+            headers: {
+                authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+        });
 
-    const response = await fetch(`${apiUrl}/api/tasks/search?${params}`, {
-        headers: {
-            authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-        },
-    });
+        const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.message || "Failed to search tasks");
+        }
 
-    const result = await response.json();
-    if (!response.ok) {
-        throw new Error(result.message || "Failed to search tasks");
+        return result;
+    } catch (err) {
+        console.error("searchTasksService error:", err.message);
+        throw err;
     }
-
-    return result;
 };
 
 export {

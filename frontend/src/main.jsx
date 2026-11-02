@@ -1,5 +1,5 @@
-// import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import 'react-toastify/dist/ReactToastify.css'
 import './index.css'
 import App from './App.jsx'
 import Login from './pages/Login.jsx'
@@ -12,23 +12,24 @@ import Calendar from './pages/Calendar.jsx'
 import Notes from './pages/Notes.jsx'
 import Settings from './pages/Settings.jsx'
 import TaskModal from './components/TaskModal.jsx'
-import { createBrowserRouter, createRoutesFromElements, RouterProvider, Route, } from 'react-router-dom'
+import { createBrowserRouter, createRoutesFromElements, RouterProvider, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from './context/authContext.jsx'
 import ProtectedRoutes from './routes/ProtectedRoutes.jsx'
 import { TaskProvider } from './context/taskContext.jsx'
+import { ToastContainer } from 'react-toastify'
 
 const router = createBrowserRouter(createRoutesFromElements(
   <Route>
     <Route element={<ProtectedRoutes />}>
       <Route path='/' element={<App />}>
+        <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path='dashboard' element={<Dashboard />} />
         <Route path='profile' element={<Profile />} />
         <Route path='tasks' element={<Tasks />} />
         <Route path='calendar' element={<Calendar />} />
         <Route path='notes' element={<Notes />} />
         <Route path='settings' element={<Settings />} />
-        <Route path='task/:id' element={<TaskModal/>}/>
-        
+        <Route path='task/:id' element={<TaskModal />} />
       </Route>
     </Route>
     <Route path='/login' element={<Login />} />
@@ -41,6 +42,18 @@ createRoot(document.getElementById('root')).render(
   <AuthProvider>
     <TaskProvider>
       <RouterProvider router={router} />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </TaskProvider>
-  </AuthProvider>,
+  </AuthProvider>
 )
