@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useAuth } from '../context/authContext.jsx'
 import { Link, useNavigate } from 'react-router-dom'
-import { CheckCircle2, Lock, Mail, User, Loader2, ArrowRight } from 'lucide-react'
+import { Lock, Mail, User, Loader2, ArrowRight } from 'lucide-react'
 import { toast } from 'react-toastify'
 
 function Register() {
@@ -37,9 +37,6 @@ function Register() {
       <div className="w-full max-w-md bg-white border border-gray-100 rounded-3xl shadow-xl p-6 sm:p-10 transition-all">
         {/* Brand Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#4800FF] text-white shadow-lg shadow-[#4800FF]/25 mb-4">
-            <CheckCircle2 className="w-7 h-7" />
-          </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
             Create an Account
           </h1>

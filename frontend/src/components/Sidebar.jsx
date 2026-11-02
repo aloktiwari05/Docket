@@ -8,8 +8,7 @@ import {
   LogOut,
   Menu,
   X,
-  User,
-  CheckCircle2
+  User
 } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/authContext.jsx'
