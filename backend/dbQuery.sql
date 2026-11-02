@@ -1,4 +1,4 @@
-create database todoapp;
+create database docket;
 
 create table users(
 id serial primary key, 

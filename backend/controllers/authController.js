@@ -180,38 +180,35 @@ const getUser = async (req, res) => {
 }
 
 const logout = async (req, res) => {
-
     try {
-        const refreshToken = req.cookies?.refreshToken
-
-        if (!refreshToken) {
-            return res.status(401).json({ message: 'Invalid unauthorized attempt !' })
+        const refreshToken = req.cookies?.refreshToken;
+        if (refreshToken) {
+            try {
+                const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+                if (decoded?.id) {
+                    await db.query('UPDATE users SET refresh_token = $1 WHERE id = $2', [null, decoded.id]);
+                }
+            } catch (err) {
+                // Ignore token decode error during logout
+            }
         }
 
-        const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET)
-        const { id } = decoded
-        console.log(decoded, id)
-
-        const result = await db.query('SELECT id, username FROM users WHERE id = $1 AND refresh_token = $2', [id, refreshToken])
-
-        if (result.rows.length === 0) {
-            return res.status(401).json({ message: 'Unauthorized user !' })
-        }
-
-        const revoke = await db.query('UPDATE users SET refresh_token = $1 WHERE id = $2', [null, id])
         res.clearCookie("refreshToken", {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "Strict",
+            secure: true,
+            sameSite: "none",
+            path: "/"
         });
 
-        return res.status(200).json({ message: 'User Logged out successfully !' })
+        return res.status(200).json({ message: 'User Logged out successfully !' });
     } catch (err) {
-        if (err.name === "TokenExpiredError" || err.name === "JsonWebTokenError") {
-            return res.status(401).json({ message: "Invalid refresh token" });
-        }
-
-        return res.status(500).json({ message: err.message });
+        res.clearCookie("refreshToken", {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+            path: "/"
+        });
+        return res.status(200).json({ message: 'User Logged out successfully !' });
     }
 }
 

@@ -33,7 +33,7 @@ const getTasks = async (req, res) => {
         const result = await db.query('SELECT task_id, title, description, status, priority, due_date FROM tasks WHERE user_id = $1 ORDER BY task_id DESC OFFSET $2 LIMIT $3', [userId, offset, limit])
 
         if (result.rows.length === 0) {
-            return res.status(404).json({ message: 'No tasks available !', data: [] })
+            return res.status(200).json({ message: 'No tasks available !', data: [] })
         }
         const data = result.rows
         return res.status(200).json({ message: 'Task fetch successful', data })
