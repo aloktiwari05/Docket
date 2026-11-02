@@ -33,7 +33,7 @@ function Register() {
   }
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-50 via-purple-50/30 to-indigo-50/40 px-4 py-8">
+    <div className="min-h-screen w-full flex items-center justify-center bg-linear-to-br from-slate-50 via-purple-50/30 to-indigo-50/40 px-4 py-8">
       <div className="w-full max-w-md bg-white border border-gray-100 rounded-3xl shadow-xl p-6 sm:p-10 transition-all">
         {/* Brand Header */}
         <div className="text-center mb-8">
@@ -41,7 +41,7 @@ function Register() {
             Create an Account
           </h1>
           <p className="text-sm text-gray-500 mt-2">
-            Get started with TaskFlow to organize your workflow
+            Get started with Docket to organize your workflow
           </p>
         </div>
 
