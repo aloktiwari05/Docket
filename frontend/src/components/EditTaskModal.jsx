@@ -1,163 +1,192 @@
-import { useTasks } from '../context/taskContext.jsx'
+import { useState } from 'react';
+import { useTasks } from '../context/taskContext.jsx';
+import { X, Loader2, Calendar, Flag, AlignLeft, Type } from 'lucide-react';
 
 function EditTaskModal({ editTask, setEditTask }) {
+  const taskID = editTask.task_id;
+  const { updateTask } = useTasks();
+  const [formData, setFormData] = useState({
+    title: editTask.title || "",
+    description: editTask.description || "",
+    priority: editTask.priority || "medium",
+    due_date: editTask.due_date || "",
+    status: editTask.status || "pending"
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const taskID = editTask.task_id
-  const { updateTask } = useTasks()
-  
-  // Handle Change
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setEditTask(prev => ({ ...prev, [name]: value }))
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle Submit 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await updateTask(taskID, editTask);
-    setEditTask(null)
+    if (!formData.title.trim()) return;
+
+    setIsSubmitting(true);
+    try {
+      const payload = {
+        ...formData,
+        title: formData.title.trim(),
+        description: formData.description.trim(),
+        due_date: formData.due_date || null
+      };
+
+      const success = await updateTask(taskID, payload);
+      if (success) {
+        setEditTask(null);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleCancelButton = () => {
-    setEditTask(null)
-  }
-
   return (
-<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 sm:p-6" onClick={(e) => e.stopPropagation()}>
-  <div className="w-full max-w-xl overflow-hidden rounded-2xl bg-white shadow-2xl">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs transition-opacity"
+      onClick={(e) => {
+        if (e.target === e.currentTarget && !isSubmitting) setEditTask(null);
+      }}
+    >
+      <div className="w-full max-w-xl max-h-[90vh] flex flex-col rounded-3xl bg-white shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4.5">
+          <div>
+            <h2 className="text-lg font-bold text-gray-900">
+              Edit Task
+            </h2>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Modify the details of your task
+            </p>
+          </div>
 
-    {/* Header */}
-    <div className="flex items-center justify-between border-b border-gray-100 px-6 py-5 sm:px-8">
-      <div>
-        <h2 className="text-xl font-semibold text-gray-900">
-          Edit Task
-        </h2>
-        <p className="mt-1 text-sm text-gray-500">
-          Update your task details below.
-        </p>
+          <button
+            type="button"
+            onClick={() => setEditTask(null)}
+            disabled={isSubmitting}
+            className="rounded-xl p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition"
+            aria-label="Close dialog"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Form Body */}
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-4">
+          {/* Title */}
+          <div>
+            <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-gray-700">
+              <Type className="w-3.5 h-3.5 text-gray-400" />
+              <span>Title <span className="text-red-500">*</span></span>
+            </label>
+
+            <input
+              type="text"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              required
+              placeholder="Task title"
+              className="w-full rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm outline-none transition focus:border-[#4800FF] focus:ring-4 focus:ring-[#4800FF]/10 placeholder:text-gray-400"
+            />
+          </div>
+
+          {/* Description */}
+          <div>
+            <label className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-gray-700">
+              <AlignLeft className="w-3.5 h-3.5 text-gray-400" />
+              <span>Description</span>
+            </label>
+
+            <textarea
+              rows={3}
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              placeholder="Add details about this task..."
+              className="w-full resize-none rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm outline-none transition focus:border-[#4800FF] focus:ring-4 focus:ring-[#4800FF]/10 placeholder:text-gray-400"
+            />
+          </div>
+
+          {/* Status, Priority, Due Date grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold text-gray-700">
+                Status
+              </label>
+              <select
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-[#4800FF] focus:ring-4 focus:ring-[#4800FF]/10 capitalize"
+              >
+                <option value="pending">Pending</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1.5 flex items-center gap-1 text-xs font-semibold text-gray-700">
+                <Flag className="w-3 h-3 text-gray-400" />
+                <span>Priority</span>
+              </label>
+              <select
+                name="priority"
+                value={formData.priority}
+                onChange={handleChange}
+                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm outline-none transition focus:border-[#4800FF] focus:ring-4 focus:ring-[#4800FF]/10 capitalize"
+              >
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="mb-1.5 flex items-center gap-1 text-xs font-semibold text-gray-700">
+                <Calendar className="w-3 h-3 text-gray-400" />
+                <span>Due Date</span>
+              </label>
+              <input
+                type="date"
+                name="due_date"
+                value={formData.due_date || ""}
+                onChange={handleChange}
+                className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none transition focus:border-[#4800FF] focus:ring-4 focus:ring-[#4800FF]/10"
+              />
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+            <button
+              type="button"
+              onClick={() => setEditTask(null)}
+              disabled={isSubmitting}
+              className="rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition"
+            >
+              Cancel
+            </button>
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="inline-flex items-center gap-2 rounded-xl bg-[#4800FF] px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-[#4800FF]/25 hover:bg-[#3d00d6] transition active:scale-[0.99] disabled:opacity-70 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Saving...</span>
+                </>
+              ) : (
+                <span>Save Changes</span>
+              )}
+            </button>
+          </div>
+        </form>
       </div>
-
-      <button
-        type="button"
-        onClick={() => setEditTask(null)}
-        aria-label="Close edit task modal"
-        className="flex h-9 w-9 items-center justify-center rounded-lg text-2xl text-gray-400 transition hover:bg-gray-100 hover:text-gray-700"
-      >
-        &times;
-      </button>
     </div>
-
-    {/* Form */}
-    <form onSubmit={handleSubmit} className="space-y-5 px-6 py-6 sm:px-8">
-
-      {/* Title */}
-      <div>
-        <label
-          htmlFor="edit-title"
-          className="mb-2 block text-sm font-medium text-gray-700"
-        >
-          Title <span className="text-red-500">*</span>
-        </label>
-
-        <input
-          id="edit-title"
-          type="text"
-          name="title"
-          value={editTask.title}
-          onChange={handleChange}
-          required
-          placeholder="Enter task title"
-          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-[#4800FF] focus:ring-4 focus:ring-[#4800FF]/10"
-        />
-      </div>
-
-      {/* Description */}
-      <div>
-        <label
-          htmlFor="edit-description"
-          className="mb-2 block text-sm font-medium text-gray-700"
-        >
-          Description
-        </label>
-
-        <textarea
-          id="edit-description"
-          rows={4}
-          name="description"
-          value={editTask.description}
-          onChange={handleChange}
-          placeholder="Add details about this task..."
-          className="w-full resize-y rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm leading-6 text-gray-900 placeholder:text-gray-400 outline-none transition focus:border-[#4800FF] focus:ring-4 focus:ring-[#4800FF]/10"
-        />
-      </div>
-
-      {/* Priority and Due Date */}
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-        <div>
-          <label
-            htmlFor="edit-priority"
-            className="mb-2 block text-sm font-medium text-gray-700"
-          >
-            Priority
-          </label>
-
-          <select
-            id="edit-priority"
-            name="priority"
-            value={editTask.priority}
-            onChange={handleChange}
-            className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-800 outline-none transition focus:border-[#4800FF] focus:ring-4 focus:ring-[#4800FF]/10"
-          >
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-          </select>
-        </div>
-
-        <div>
-          <label
-            htmlFor="edit-due-date"
-            className="mb-2 block text-sm font-medium text-gray-700"
-          >
-            Due Date
-            <span className="ml-1 font-normal text-gray-400">
-              (Optional)
-            </span>
-          </label>
-
-          <input
-            id="edit-due-date"
-            type="date"
-            name="due_date"
-            value={editTask.due_date || ""}
-            onChange={handleChange}
-            className="w-full min-w-0 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-800 outline-none transition focus:border-[#4800FF] focus:ring-4 focus:ring-[#4800FF]/10"
-          />
-        </div>
-      </div>
-
-      {/* Footer */}
-      <div className="flex flex-col-reverse gap-3 border-t border-gray-100 pt-5 sm:flex-row sm:justify-end">
-        <button
-          type="button"
-          onClick={handleCancelButton}
-          className="rounded-xl border border-gray-200 px-5 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-100"
-        >
-          Cancel
-        </button>
-
-        <button
-          type="submit"
-          className="rounded-xl bg-[#4800FF] px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#3d00d6] focus:outline-none focus:ring-4 focus:ring-[#4800FF]/20"
-        >
-          Save Changes
-        </button>
-      </div>
-
-    </form>
-  </div>
-</div>
-)
+  );
 }
 
-export default EditTaskModal
+export default EditTaskModal;
