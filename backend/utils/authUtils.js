@@ -19,8 +19,8 @@ const saveRefreshToken = async (userId, token) => {
 const setRefreshTokenCookie = (res, refreshToken) => {
     return res.cookie('refreshToken',refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV == 'development',
-        sameSite: "lax",
+        secure: true,
+        sameSite: "none",
         maxAge: 7*24*60*60*1000,
     })
 }
