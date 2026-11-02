@@ -1,16 +1,13 @@
-// import React from 'react'
-// import Register from './components/Register.jsx'
 import { Outlet } from "react-router-dom"
 import Sidebar from "./components/Sidebar.jsx"
-import { ToastContainer } from 'react-toastify'
-// import Task from './components/Task.jsx'
 
 function App() {
   return (
-    <div className='w-screen h-screen flex'>
-      <ToastContainer/>
-      <Sidebar/>
-      <Outlet/>
+    <div className="min-h-screen w-full bg-gray-50 flex flex-col lg:flex-row antialiased">
+      <Sidebar />
+      <main className="flex-1 min-w-0 flex flex-col">
+        <Outlet />
+      </main>
     </div>
   )
 }
