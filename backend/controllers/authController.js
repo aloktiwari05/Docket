@@ -131,7 +131,7 @@ const refresh = async (req, res) => {
         if (err.name === "TokenExpiredError") {
             res.clearCookie("refreshToken", {
                 httpOnly: true,
-                sameSite: "lax",
+                sameSite: "none",
                 secure: true,
                 path: "/"
             });
@@ -144,7 +144,7 @@ const refresh = async (req, res) => {
         if (err.name === "JsonWebTokenError") {
             res.clearCookie("refreshToken", {
                 httpOnly: true,
-                sameSite: "lax",
+                sameSite: "none",
                 secure: true,
                 path: "/"
             });

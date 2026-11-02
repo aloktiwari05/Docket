@@ -33,8 +33,8 @@ const AuthProvider = ({ children }) => {
 
 
     useEffect(() => {
-        refreshService(setAccessToken, setIsLoading, setUser, login );
-    }, [isLoading])
+        refreshService(setAccessToken, setIsLoading, setUser );
+    }, [])
 
     return (
         <AuthContext.Provider value={{ accessToken, setAccessToken, isLoading, setIsLoading, user, setUser, login, logout }}>
