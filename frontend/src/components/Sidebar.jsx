@@ -45,12 +45,9 @@ function Sidebar() {
         {/* Brand */}
         <div className="flex items-center justify-between mb-6 px-2">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-[#4800FF] flex items-center justify-center text-white shadow-md shadow-purple-200">
-              <CheckCircle2 className="w-5 h-5" />
-            </div>
             <div>
               <h1 className="text-xl font-bold tracking-tight text-[#4800FF]">
-                TaskFlow
+                Docket
               </h1>
               <p className="text-[11px] font-medium text-gray-400">Personal Workspace</p>
             </div>
@@ -136,10 +133,7 @@ function Sidebar() {
             <Menu className="w-6 h-6" />
           </button>
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-[#4800FF] flex items-center justify-center text-white shadow-xs">
-              <CheckCircle2 className="w-4 h-4" />
-            </div>
-            <span className="text-lg font-bold text-[#4800FF] tracking-tight">TaskFlow</span>
+            <span className="text-lg font-bold text-[#4800FF] tracking-tight">Docket</span>
           </div>
         </div>
 
