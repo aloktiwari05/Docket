@@ -1,222 +1,221 @@
-import { useState, } from "react";
-import { Plus } from "lucide-react";
-import { useTasks } from '../context/taskContext.jsx'
-import TaskCard from '../components/TaskCard.jsx'
+import { useState } from "react";
+import { Plus, CheckSquare, ListFilter, Loader2 } from "lucide-react";
+import { useTasks } from '../context/taskContext.jsx';
+import TaskCard from '../components/TaskCard.jsx';
 import CreateTaskModal from "../components/CreateTaskModal.jsx";
 import EditTaskModal from "../components/EditTaskModal.jsx";
 import Pagination from "../components/Pagination.jsx";
 
 function Tasks() {
-  const { allTasks, editTask, setEditTask } = useTasks()
+  const { allTasks = [], editTask, setEditTask, isLoadingTasks } = useTasks();
   const [activeTab, setActiveTab] = useState("all");
   const [showTaskForm, setShowTaskForm] = useState(false);
 
   const now = new Date();
   const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+  const month = String(now.getMonth() + 1).padStart(2, '0');
   const day = String(now.getDate()).padStart(2, '0');
   const today = `${year}${month}${day}`;
 
-  const allCount = allTasks?.length
-  const pendingCount = allTasks?.filter((task) => task.status === 'pending').length
-  const completedCount = allTasks?.filter((task) => task.status === 'completed').length
-  const overdueCount = allTasks.filter((task) => { return task.due_date?.replaceAll('-', '') < today && task.status !== 'completed'; }).length
+  const safeTasks = Array.isArray(allTasks) ? allTasks : [];
+
+  const allCount = safeTasks.length;
+  const pendingCount = safeTasks.filter((task) => task.status === 'pending').length;
+  const completedCount = safeTasks.filter((task) => task.status === 'completed').length;
+  const overdueCount = safeTasks.filter((task) => {
+    if (!task.due_date || task.status === 'completed') return false;
+    return String(task.due_date).replaceAll('-', '') < today;
+  }).length;
 
   const getFilteredTasks = () => {
     switch (activeTab) {
       case "all":
-        return allTasks;
+        return safeTasks;
 
       case "pending":
-        return allTasks.filter(
-          (task) => task.status === "pending"
-        );
+        return safeTasks.filter((task) => task.status === "pending");
 
       case "completed":
-        return allTasks.filter(
-          (task) => task.status === "completed"
-        );
+        return safeTasks.filter((task) => task.status === "completed");
 
       case "overdue":
-        return allTasks.filter(
-          (task) =>
-            task.due_date?.replaceAll("-", "") < today &&
-            task.status !== "completed"
-        );
+        return safeTasks.filter((task) => {
+          if (!task.due_date || task.status === "completed") return false;
+          return String(task.due_date).replaceAll("-", "") < today;
+        });
 
       default:
-        return [];
+        return safeTasks;
     }
   };
 
   const getEmptyMessage = () => {
     switch (activeTab) {
       case "all":
-        return "No tasks yet !";
-
+        return "No tasks created yet! Click 'New Task' to get started.";
       case "pending":
-        return "No pending tasks !";
-
+        return "No pending tasks. You're completely up to date!";
       case "completed":
-        return "Complete a task and it will appear here !";
-
-
+        return "No completed tasks yet. Finish a task and it will show up here!";
       case "overdue":
-        return "No overdue tasks !";
-
+        return "No overdue tasks. Great job staying on schedule!";
       default:
-        return "No tasks available !";
+        return "No tasks available.";
     }
   };
 
-  const renderTasks = () => {
-    const tasks = getFilteredTasks();
-
-    if (tasks.length === 0) {
-      return (
-        <div className="h-full w-full flex items-center justify-center text-gray-500 text-xl">
-          <p>{getEmptyMessage()}</p>
-        </div>
-      );
-    }
-
-    return tasks.map((task) => (
-      <TaskCard
-        key={task.task_id}
-        task={task}
-        setEditTask={setEditTask}
-      />
-    ));
-  };
+  const filteredTasks = getFilteredTasks();
 
   const tabs = [
-    { id: "all", label: "All", count: allCount },
+    { id: "all", label: "All Tasks", count: allCount },
     { id: "pending", label: "Pending", count: pendingCount },
     { id: "completed", label: "Completed", count: completedCount },
     { id: "overdue", label: "Overdue", count: overdueCount },
   ];
-    
 
-return (
-  <div className="flex min-h-screen w-full flex-col bg-gray-50 px-3 py-5 sm:px-5 lg:px-8">
-    {/* Header */}
-    <section className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-          Tasks
-        </h1>
-        <p className="mt-1 text-sm text-gray-500 sm:text-base">
-          All your tasks in one place
-        </p>
+  return (
+    <div className="flex flex-1 min-h-screen w-full flex-col bg-gray-50 p-4 sm:p-6 lg:p-8">
+      {/* Page Header */}
+      <section className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900">
+            Tasks
+          </h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Organize, prioritize, and manage all your tasks
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setShowTaskForm(true)}
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#4800FF] px-5 py-3 text-sm font-semibold text-white shadow-sm shadow-[#4800FF]/25 transition hover:bg-[#3d00d6] active:scale-[0.99] w-full sm:w-auto"
+        >
+          <Plus size={18} />
+          <span>New Task</span>
+        </button>
+      </section>
+
+      {/* Filter Tabs */}
+      <div className="mb-6 overflow-x-auto rounded-2xl border border-gray-200/80 bg-white p-1.5 shadow-xs">
+        <div className="flex min-w-max items-center gap-1">
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                aria-pressed={isActive}
+                className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition ${
+                  isActive
+                    ? "bg-[#4800FF] text-white shadow-xs"
+                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                }`}
+              >
+                <span>{tab.label}</span>
+                <span
+                  className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                    isActive
+                      ? "bg-white/20 text-white"
+                      : "bg-gray-100 text-gray-600"
+                  }`}
+                >
+                  {tab.count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      <button
-        type="button"
-        onClick={() => setShowTaskForm(true)}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#4800FF] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#3d00d6] focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 sm:w-auto"
-      >
-        <Plus size={18} />
-        New Task
-      </button>
-    </section>
+      {/* Task List Table / Cards Container */}
+      <section className="flex flex-1 flex-col overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-xs">
+        {/* Desktop Table Header */}
+        <div className="hidden lg:grid grid-cols-[minmax(0,2.5fr)_minmax(90px,1fr)_minmax(85px,0.9fr)_minmax(110px,1.1fr)_minmax(95px,1fr)_minmax(120px,1.2fr)] items-center gap-3 border-b border-gray-200 bg-gray-50/80 px-5 py-3.5">
+          <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+            Task
+          </span>
+          <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+            Category
+          </span>
+          <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+            Priority
+          </span>
+          <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+            Due Date
+          </span>
+          <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+            Status
+          </span>
+          <span className="text-xs font-semibold uppercase tracking-wider text-gray-500 text-right">
+            Actions
+          </span>
+        </div>
 
-    {/* Filters */}
-    <div className="mb-5 overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-sm">
-      <div className="flex min-w-max items-center gap-1 px-2 pt-2 sm:px-3">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => setActiveTab(tab.id)}
-            aria-pressed={activeTab === tab.id}
-            className={`whitespace-nowrap border-b-2 px-3 py-3 text-sm font-medium transition sm:px-5 ${
-              activeTab === tab.id
-                ? "border-[#4800FF] bg-purple-50 text-[#4800FF]"
-                : "border-transparent text-gray-500 hover:bg-gray-50 hover:text-gray-900"
-            }`}
-          >
-            {tab.label}
-            <span className="ml-1.5 text-xs opacity-75">
-              ({tab.count})
-            </span>
-          </button>
-        ))}
-      </div>
-    </div>
-
-    {/* Task list */}
-    <section className="flex flex-1 flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-      {/* Desktop/tablet table header */}
-      <div className="hidden grid-cols-[minmax(0,2fr)_minmax(85px,.85fr)_minmax(75px,.75fr)_minmax(95px,.95fr)_minmax(90px,.85fr)_minmax(115px,1.1fr)] items-center gap-2 border-b border-gray-200 bg-gray-50 px-4 py-4 lg:grid lg:gap-3 lg:px-5">
-        <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-          Task
-        </span>
-        <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-          Category
-        </span>
-        <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-          Priority
-        </span>
-        <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-          Due Date
-        </span>
-        <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-          Status
-        </span>
-        <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-          Actions
-        </span>
-      </div>
-
-      {/* Content */}
-      <div className="flex-1">
-        {allTasks.length === 0 ? (
-          <div className="flex flex-col items-center justify-center px-5 py-16 text-center">
-            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-purple-50">
-              <Plus size={26} className="text-[#4800FF]" />
+        {/* Content Body */}
+        <div className="flex-1">
+          {isLoadingTasks ? (
+            <div className="flex flex-col items-center justify-center py-20 text-gray-500 gap-3">
+              <Loader2 className="w-8 h-8 animate-spin text-[#4800FF]" />
+              <p className="text-sm font-medium">Loading tasks...</p>
             </div>
+          ) : safeTasks.length === 0 ? (
+            <div className="flex flex-col items-center justify-center px-4 py-20 text-center">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-purple-50 text-[#4800FF]">
+                <CheckSquare size={32} />
+              </div>
+              <h2 className="text-lg font-bold text-gray-900">
+                No tasks yet
+              </h2>
+              <p className="mt-1.5 max-w-sm text-sm text-gray-500">
+                Create your first task to start organizing and tracking your work.
+              </p>
+              <button
+                type="button"
+                onClick={() => setShowTaskForm(true)}
+                className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#4800FF] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#3d00d6]"
+              >
+                <Plus size={16} />
+                Create your first task
+              </button>
+            </div>
+          ) : filteredTasks.length === 0 ? (
+            <div className="flex flex-col items-center justify-center px-4 py-16 text-center text-gray-500">
+              <ListFilter size={28} className="text-gray-400 mb-2" />
+              <p className="text-sm font-medium text-gray-700">{getEmptyMessage()}</p>
+            </div>
+          ) : (
+            filteredTasks.map((task) => (
+              <TaskCard
+                key={task.task_id}
+                task={task}
+                setEditTask={setEditTask}
+              />
+            ))
+          )}
+        </div>
+      </section>
 
-            <h2 className="text-base font-semibold text-gray-900">
-              No tasks yet
-            </h2>
-
-            <p className="mt-2 max-w-sm text-sm leading-6 text-gray-500">
-              Create your first task to start organizing your work.
-            </p>
-
-            <button
-              type="button"
-              onClick={() => setShowTaskForm(true)}
-              className="mt-5 rounded-lg bg-[#4800FF] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#3d00d6]"
-            >
-              Create your first task
-            </button>
-          </div>
-        ) : (
-          renderTasks()
-        )}
+      {/* Pagination */}
+      <div className="mt-6">
+        <Pagination />
       </div>
-    </section>
 
-    {/* Pagination */}
-    <div className="mt-5">
-      <Pagination />
+      {/* Create Task Modal */}
+      {showTaskForm && (
+        <CreateTaskModal setShowTaskForm={setShowTaskForm} />
+      )}
+
+      {/* Edit Task Modal */}
+      {editTask && (
+        <EditTaskModal
+          editTask={editTask}
+          setEditTask={setEditTask}
+        />
+      )}
     </div>
-
-    {/* Modals */}
-    {showTaskForm && (
-      <CreateTaskModal setShowTaskForm={setShowTaskForm} />
-    )}
-
-    {editTask && (
-      <EditTaskModal
-        editTask={editTask}
-        setEditTask={setEditTask}
-      />
-    )}
-  </div>
-);
-
+  );
 }
 
 export default Tasks;
